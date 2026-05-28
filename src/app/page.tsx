@@ -19,7 +19,7 @@ type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'
 type GameState = 'idle' | 'playing' | 'paused' | 'gameover'
 type PoemLanguage = 'mixed' | 'zh' | 'en'
 type WordLanguage = 'all' | 'zh' | 'en'
-type WordTheme = 'all' | 'nature' | 'season' | 'mood' | 'cosmos' | 'journey'
+type WordTheme = 'all' | 'nature' | 'season' | 'mood' | 'cosmos' | 'journey' | 'myth' | 'time' | 'teawine' | 'deepsea' | 'music' | 'city' | 'wuxia'
 
 // ─── Themed Word Pools ────────────────────────────────────────────
 const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]; en: string[] }> = {
@@ -116,6 +116,111 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
       'odyssey', 'passage', 'drifting', 'wayfarer', 'sojourn', 'pilgrim',
       'departure', 'arrival', 'wilderness', 'frontier', 'expedition',
       'beacon', 'anchor', 'navigate', 'roaming', 'quest', 'milestone',
+    ],
+  },
+  myth: {
+    label: '神话',
+    icon: '🐉',
+    zh: [
+      '凤凰', '蛟龙', '嫦娥', '夸父', '女娲', '盘古', '精卫', '麒麟',
+      '瑶池', '蓬莱', '天柱', '九天', '神谕', '涅槃', '飞升', '仙山',
+      '封印', '祭坛', '神火', '灵兽', '伏羲', '洛神', '瑶琴', '蟠桃',
+    ],
+    en: [
+      'phoenix', 'dragon', 'oracle', 'prophecy', 'titan', 'olympus', 'valhalla',
+      'griffin', 'siren', 'muse', 'pantheon', 'mythos', 'immortal', 'ritual',
+      'enchanted', 'celestial', 'divine', 'saga', 'relic', 'artifact',
+      'chimera', 'eternal', 'sacred', 'legend',
+    ],
+  },
+  time: {
+    label: '时光',
+    icon: '⏳',
+    zh: [
+      '瞬间', '永恒', '回忆', '轮回', '琥珀', '流年', '韶华', '迟暮',
+      '岁月', '刹那', '光阴', '往昔', '晨昏', '须臾', '沧桑', '永恒',
+      '时光', '暮年', '追忆', '流沙', '年华', '今夕', '昔年', '余温',
+    ],
+    en: [
+      'moment', 'eternal', 'memory', 'cycle', 'amber', 'fleeting', 'epoch',
+      'twilight', 'relic', 'yesterday', 'tomorrow', 'ancient', 'ephemeral',
+      'timeless', 'forever', 'passage', 'hourglass', 'legacy', 'vintage',
+      'reminisce', 'dusk', 'dawn', 'seasons', 'temporal',
+    ],
+  },
+  teawine: {
+    label: '茶酒',
+    icon: '🍵',
+    zh: [
+      '清茶', '浊酒', '炊烟', '桂花酿', '碧螺春', '竹叶青', '女儿红', '龙井',
+      '茶禅', '微醺', '独酌', '对饮', '醉月', '茶香', '酒旗', '暖炉',
+      '杯盏', '半醺', '清欢', '浮白', '煮酒', '品茗', '残茶', '新酿',
+    ],
+    en: [
+      'brew', 'vintage', 'amber', 'toast', 'cellar', 'distill', 'ferment',
+      'sip', 'pour', 'vessel', 'nectar', 'intoxicate', 'sober', 'decanter',
+      'barrel', 'infusion', 'ceremony', 'steep', 'aroma', 'bouquet',
+      'vintage', 'goblet', 'chalice', 'elixir',
+    ],
+  },
+  deepsea: {
+    label: '深海',
+    icon: '🌊',
+    zh: [
+      '暗流', '珊瑚', '鲸歌', '深渊', '海沟', '潮汐', '沉船', '海藻',
+      '灯塔', '暗礁', '海底', '碧蓝', '浮游', '漩涡', '寒流', '海月',
+      '深渊', '海螺', '水母', '海沟', '龙宫', '潮涌', '海风', '蓝洞',
+    ],
+    en: [
+      'abyss', 'coral', 'whale', 'depth', 'current', 'trench', 'shipwreck',
+      'bioluminescent', 'lighthouse', 'reef', 'sunken', 'plankton', 'vortex',
+      'siren', 'kraken', 'mariana', 'pressure', 'tidepool', 'sonar',
+      'aquatic', 'submerge', 'drift', 'byssal', 'lagoon',
+    ],
+  },
+  music: {
+    label: '音乐',
+    icon: '🎵',
+    zh: [
+      '琴弦', '回旋', '休止', '即兴', '旋律', '和声', '笛声', '鼓点',
+      '余音', '低吟', '变奏', '序曲', '终章', '清唱', '和弦', '颤音',
+      '韵律', '乐章', '共鸣', '独奏', '交响', '泛音', '节拍', '咏叹',
+    ],
+    en: [
+      'melody', 'harmony', 'rhythm', 'crescendo', 'tempo', 'chord', 'refrain',
+      'sonata', 'cadence', 'staccato', 'legato', 'falsetto', 'resonance',
+      'cadenza', 'diminuendo', 'forte', 'vibrato', 'encore', 'fugue',
+      'aria', 'nocturne', 'prelude', 'symphony', 'improvisation',
+    ],
+  },
+  city: {
+    label: '城市',
+    icon: '🏙️',
+    zh: [
+      '霓虹', '地铁', '天际线', '咖啡馆', '街角', '灯火', '橱窗', '夜行',
+      '站台', '巷弄', '高楼', '斑马线', '钟楼', '天桥', '夜市', '公寓',
+      '烟火', '弄堂', '摩天', '城池', '路灯', '车流', '黄昏', '人潮',
+    ],
+    en: [
+      'neon', 'subway', 'skyline', 'espresso', 'alley', 'boulevard', 'rooftop',
+      'brownstone', 'penthouse', 'crosswalk', 'skyscraper', 'pavement',
+      'marquee', 'overpass', 'nightmarket', 'highrise', 'streetlight',
+      'traffic', 'downtown', 'suburb', 'laneway', 'plaza', 'balcony', 'commute',
+    ],
+  },
+  wuxia: {
+    label: '武侠',
+    icon: '🗡️',
+    zh: [
+      '剑气', '侠骨', '风尘', '刀光', '江湖', '恩仇', '轻功', '内力',
+      '剑客', '破阵', '刀锋', '义薄', '绝世', '铁掌', '寒刃', '飞檐',
+      '侠义', '秘籍', '掌门', '追风', '落剑', '点穴', '走镖', '踏雪',
+    ],
+    en: [
+      'blade', 'honor', 'vengeance', 'clan', 'master', 'disciple', 'dual',
+      'shadowless', 'ironfist', 'dragonfly', 'vengeful', 'righteous',
+      'unyielding', 'hermit', 'monastery', 'shaft', 'parry', 'thrust',
+      'dojo', 'sensei', 'ronin', 'shogun', 'samurai', 'warrior',
     ],
   },
 }
