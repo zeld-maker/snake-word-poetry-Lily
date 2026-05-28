@@ -895,7 +895,7 @@ export default function Home() {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <p className="text-xs text-[#8a8575]">
-              主题 <span className="text-[#b0a890]">（可多选）</span>
+              主题 <span className="text-[#b0a890]">（可多选·全不选则随机抽取主题）</span>
             </p>
             <div className="flex gap-2">
               <button
