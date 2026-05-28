@@ -19,14 +19,14 @@ type GameState = 'idle' | 'playing' | 'paused' | 'gameover'
 
 // ─── Color Palette ────────────────────────────────────────────────
 const COLORS = {
-  bg: '#001f3f',          // Navy
+  bg: '#f5f0e1',          // Ivory/Beige
   grid: '#36454f',        // Charcoal
-  snakeHead: '#ffffff',
+  snakeHead: '#2d2d2d',
   food: '#ef4444',
-  foodGlow: 'rgba(239, 68, 68, 0.3)',
-  wall: '#1a1a2e',
-  text: '#f8fafc',
-  overlay: 'rgba(0, 31, 63, 0.85)',
+  foodGlow: 'rgba(239, 68, 68, 0.25)',
+  wall: '#36454f',        // Charcoal
+  text: '#2d2d2d',
+  overlay: 'rgba(245, 240, 225, 0.85)',
 }
 
 // ─── Rainbow Colors ─────────────────────────────────────────────────
@@ -190,7 +190,7 @@ function renderGame(
       ctx.fill()
 
       // Pupils
-      ctx.fillStyle = '#001f3f'
+      ctx.fillStyle = '#f5f0e1'
       ctx.beginPath()
       ctx.arc(eye1X, eye1Y, 1.5, 0, Math.PI * 2)
       ctx.fill()
@@ -471,39 +471,39 @@ export default function Home() {
   }, [render])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#001f3f] via-[#001a35] to-[#001f3f] p-4 sm:p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#f5f0e1] via-[#ede8d8] to-[#f5f0e1] p-4 sm:p-6">
       {/* Header */}
       <header className="mb-6 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
+        <h1 className="text-4xl sm:text-5xl font-bold text-[#36454f] tracking-tight">
           🐍 贪吃蛇
         </h1>
-        <p className="mt-2 text-slate-400 text-sm sm:text-base">
+        <p className="mt-2 text-[#5a5545] text-sm sm:text-base">
           方向键 / WASD 控制移动 · 空格键 暂停
         </p>
       </header>
 
       {/* Score Panel */}
       <div className="flex gap-4 mb-4">
-        <Card className="bg-slate-800/60 border-slate-700/50 backdrop-blur-sm">
+        <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
           <CardContent className="py-2 px-4 flex items-center gap-2">
-            <span className="text-slate-400 text-sm">得分</span>
-            <Badge variant="secondary" className="text-lg font-bold bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+            <span className="text-[#5a5545] text-sm">得分</span>
+            <Badge variant="secondary" className="text-lg font-bold bg-emerald-500/20 text-emerald-700 border-emerald-500/30">
               {score}
             </Badge>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/60 border-slate-700/50 backdrop-blur-sm">
+        <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
           <CardContent className="py-2 px-4 flex items-center gap-2">
-            <span className="text-slate-400 text-sm">最高</span>
-            <Badge variant="secondary" className="text-lg font-bold bg-amber-500/20 text-amber-400 border-amber-500/30">
+            <span className="text-[#5a5545] text-sm">最高</span>
+            <Badge variant="secondary" className="text-lg font-bold bg-amber-500/20 text-amber-700 border-amber-500/30">
               {highScore}
             </Badge>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/60 border-slate-700/50 backdrop-blur-sm">
+        <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
           <CardContent className="py-2 px-4 flex items-center gap-2">
-            <span className="text-slate-400 text-sm">长度</span>
-            <Badge variant="secondary" className="text-lg font-bold bg-sky-500/20 text-sky-400 border-sky-500/30">
+            <span className="text-[#5a5545] text-sm">长度</span>
+            <Badge variant="secondary" className="text-lg font-bold bg-sky-500/20 text-sky-700 border-sky-500/30">
               {snakeLength}
             </Badge>
           </CardContent>
@@ -511,7 +511,7 @@ export default function Home() {
       </div>
 
       {/* Game Canvas */}
-      <div className="relative rounded-xl overflow-hidden shadow-2xl shadow-emerald-500/10 border-2 border-slate-700/50">
+      <div className="relative rounded-xl overflow-hidden shadow-2xl shadow-emerald-500/5 border-2 border-[#36454f]/50">
         <canvas
           ref={canvasRef}
           width={CANVAS_SIZE}
@@ -537,7 +537,7 @@ export default function Home() {
             onClick={togglePause}
             size="lg"
             variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white font-semibold px-8 transition-all hover:scale-105 active:scale-95"
+            className="border-[#36454f]/60 text-[#36454f] hover:bg-[#36454f]/10 font-semibold px-8 transition-all hover:scale-105 active:scale-95"
           >
             暂停
           </Button>
@@ -555,7 +555,7 @@ export default function Home() {
               onClick={startGame}
               size="lg"
               variant="outline"
-              className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white font-semibold px-8 transition-all hover:scale-105 active:scale-95"
+              className="border-[#36454f]/60 text-[#36454f] hover:bg-[#36454f]/10 font-semibold px-8 transition-all hover:scale-105 active:scale-95"
             >
               重新开始
             </Button>
@@ -579,7 +579,7 @@ export default function Home() {
           <Button
             variant="outline"
             size="icon"
-            className="border-slate-600 text-slate-300 h-12 w-full"
+            className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
             onTouchStart={() => {
               if (directionRef.current !== 'DOWN') nextDirectionRef.current = 'UP'
             }}
@@ -590,7 +590,7 @@ export default function Home() {
           <Button
             variant="outline"
             size="icon"
-            className="border-slate-600 text-slate-300 h-12 w-full"
+            className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
             onTouchStart={() => {
               if (directionRef.current !== 'RIGHT') nextDirectionRef.current = 'LEFT'
             }}
@@ -600,7 +600,7 @@ export default function Home() {
           <Button
             variant="outline"
             size="icon"
-            className="border-slate-600 text-slate-300 h-12 w-full"
+            className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
             onTouchStart={() => {
               if (directionRef.current !== 'UP') nextDirectionRef.current = 'DOWN'
             }}
@@ -610,7 +610,7 @@ export default function Home() {
           <Button
             variant="outline"
             size="icon"
-            className="border-slate-600 text-slate-300 h-12 w-full"
+            className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
             onTouchStart={() => {
               if (directionRef.current !== 'LEFT') nextDirectionRef.current = 'RIGHT'
             }}
@@ -622,7 +622,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-auto pt-6 text-center">
-        <p className="text-slate-600 text-xs">
+        <p className="text-[#8a8575] text-xs">
           使用方向键 ↑↓←→ 或 WASD 控制蛇的方向 · 按 空格键 暂停/继续
         </p>
       </footer>
