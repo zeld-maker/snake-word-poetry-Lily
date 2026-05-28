@@ -35,12 +35,29 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 3. 韵脚必须属同一韵部（《平水韵》或《中华新韵》），不可串韵
 4. 平仄需基本合律："一三不论，二四分明"
 
+【五言绝句示例】：
+空山新雨后（5字 ✓）— 不押韵
+天气晚来秋（5字 ✓）— 押韵(A)
+明月松间照（5字 ✓）— 不押韵
+清泉石上流（5字 ✓）— 押韵(A)
+（注：秋、流同属一韵部 ✓）
+
 五言律诗（8句，每句5字，共40字）：
 1. 每句必须恰好5个字，不可多字少字
 2. 第二、四、六、八句末字必须押韵，首句可押可不押
 3. 韵脚必须属同一韵部，不可串韵
 4. 严格遵守平仄规则
 5. 中间两联（颔联3-4句、颈联5-6句）必须对仗
+
+【五言律诗示例】（节选结构）：
+国破山河在（5字）— 首句
+城春草木深（5字）— 押韵(A)
+感时花溅泪（5字）— 颔联上句 ↘对仗
+恨别鸟惊心（5字）— 颔联下句 ↗
+烽火连三月（5字）— 颈联上句 ↘对仗
+家书抵万金（5字）— 颈联下句 ↗
+白头搔更短（5字）
+浑欲不胜簪（5字）— 押韵(A)
 
 请在诗末用括号注明选择了哪种：如（五言绝句）或（五言律诗）`,
 
@@ -52,12 +69,29 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 3. 韵脚必须属同一韵部（《平水韵》或《中华新韵》），不可串韵
 4. 平仄需基本合律："一三五不论，二四六分明"
 
+【七言绝句示例】：
+朝辞白帝彩云间（7字 ✓）— 押韵(A)
+千里江陵一日还（7字 ✓）— 押韵(A)
+两岸猿声啼不住（7字 ✓）— 不押韵
+轻舟已过万重山（7字 ✓）— 押韵(A)
+（注：间、还、山同属一韵部 ✓）
+
 七言律诗（8句，每句7字，共56字）：
 1. 每句必须恰好7个字，不可多字少字
 2. 第二、四、六、八句末字必须押韵，首句可押可不押
 3. 韵脚必须属同一韵部，不可串韵
 4. 严格遵守平仄规则："一三五不论，二四六分明"
 5. 中间两联（颔联3-4句、颈联5-6句）必须对仗
+
+【七言律诗示例】（节选结构）：
+风急天高猿啸哀（7字）— 押韵(A)
+渚清沙白鸟飞回（7字）— 押韵(A)
+无边落木萧萧下（7字）— 颔联上句 ↘对仗
+不尽长江滚滚来（7字）— 颔联下句 ↗
+万里悲秋常作客（7字）— 颈联上句 ↘对仗
+百年多病独登台（7字）— 颈联下句 ↗
+艰难苦恨繁霜鬓（7字）
+潦倒新停浊酒杯（7字）— 押韵(A)
 
 请在诗末用括号注明选择了哪种：如（七言绝句）或（七言律诗）`,
 
@@ -71,6 +105,15 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 6. 句式可以灵活变化，允许长短句交替
 7. 请在诗末注明（歌行体）或（古风）
 
+【歌行体示例】（节选，展示换韵与长短句交替）：
+君不见黄河之水天上来（7字）— 押A韵
+奔流到海不复回（7字）— 押A韵
+君不见高堂明镜悲白发（7字）— 换B韵
+朝如青丝暮成雪（7字）— 押B韵
+人生得意须尽欢（7字）— 换C韵
+莫使金樽空对月（7字）— 押C韵
+……（篇幅可自由延伸）
+
 这是最适合8个关键词的体裁，因为有足够的篇幅自然融入所有关键词。`,
 
     modern: `【必须写现代诗】请写自由体现代诗歌。规则：
@@ -79,7 +122,20 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 3. 注重意象的营造和情感的流动
 4. 语言要优美、凝练、有张力
 5. 可以使用跨行、断句等现代诗技巧
-6. 诗末用括号注明（现代诗）`,
+6. 诗末用括号注明（现代诗）
+
+【现代诗示例】：
+从远方来的人
+带着海的盐味
+和风的形状
+
+他把月光
+折成一只纸鹤
+放在我的窗台上
+
+那一刻
+所有的寂静
+都有了翅膀`,
   }
 
   // Bilingual forms: have both Chinese and English versions
@@ -109,10 +165,19 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 3. The rhyme scheme must be STRICTLY followed — no near-rhymes, no slant-rhymes
 4. Each quatrain should develop the theme; the couplet should deliver a twist or summary
 5. COUNT SYLLABLES on every line before finalizing. 10 syllables per line is NON-NEGOTIABLE.
-6. Example of correct iambic pentameter:
+
+Example of correct iambic pentameter:
    "Shall I com-pare thee to a sum-mer's day?" (10 syllables ✓)
-   "The love that I have for you will never die" (10 syllables ✓)
-7. Add (Sonnet) at the end`,
+   "The love that I have for you will never die" (10 syllables ✓ — wait, that's 11! ✗)
+   "The love I bear for you will ne-ver die" (10 syllables ✓)
+
+Example rhyme scheme structure:
+   Quatrain 1: day(A) — tem-plate(B) — May(A) — re-late(B)
+   Quatrain 2: shine(C) — dim(D) — di-vine(C) — trim(D)
+   Quatrain 3: so(E) — blind(F) — grow(E) — mind(F)
+   Couplet:    see(G) — thee(G)
+
+6. Add (Sonnet) at the end`,
     },
 
     haiku: {
@@ -185,6 +250,13 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 5. Ballads tell a story — include narrative progression with a beginning, middle, and end
 6. Use simple, direct, and vivid language
 7. The refrain or repeated element is optional but effective
+
+Example (ABCB rhyme, 8/6/8/6 syllables):
+   The wind blew through the val-ley (8, A)
+   And swept the a-way the snow (6, B)
+   The trav-el-er walked in si-lence (8, C)
+   With no-where left to go (6, B)
+
 8. Add (Ballad) at the end`,
     },
 
@@ -241,7 +313,27 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
    第5节：A韵 - b韵 - 叠句二
    第6节：A韵 - b韵 - 叠句一 - 叠句二
 7. 叠句应当在重复中逐渐累积新的含义
-8. 请在诗末注明（维拉内拉）`,
+8. 请在诗末注明（维拉内拉）
+
+【维拉内拉示例】（节选结构，7字×19行）：
+第1节：
+　　月光洒满旧城墙（A韵）← 叠句一
+　　谁在风中独徘徊（b韵）
+　　回忆如潮不可挡（A韵）← 叠句二
+第2节：
+　　岁月无声自流淌（A韵）
+　　谁在风中独徘徊（b韵）
+　　月光洒满旧城墙（叠句一原样重复）
+第3节：
+　　花开花落又一霜（A韵）
+　　谁在风中独徘徊（b韵）
+　　回忆如潮不可挡（叠句二原样重复）
+……（第4-5节同理交替）
+第6节（末节）：
+　　纵然前路两茫茫（A韵）
+　　谁在风中独徘徊（b韵）
+　　月光洒满旧城墙（叠句一）
+　　回忆如潮不可挡（叠句二）`,
 
       en: `【Must write a villanelle — STRICT FORM REQUIRED】Rules:
 
@@ -259,6 +351,19 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
    (A¹ = first refrain, A² = second refrain, a/b = rhyming lines)
 6. Each line should be in iambic pentameter (10 syllables, da-DUM pattern)
 7. The refrains should be evocative lines that gain meaning with each repetition
+
+Example (excerpt showing refrain repetition pattern):
+   Stanza 1:                    Stanza 2:
+   The night is dark and cold (A¹)   The stars be-gin to fade (a)
+   Yet still I walk a-lone (b)       Yet still I walk a-lone (b)
+   My sto-ry must be told (A²)       The night is dark and cold (A¹, exact repeat)
+
+   Stanza 6 (final quatrain):
+   Let truth at last be bold (a)
+   Yet still I walk a-lone (b)
+   The night is dark and cold (A¹, exact repeat)
+   My sto-ry must be told (A², exact repeat)
+
 8. Add (Villanelle) at the end`,
     },
   }

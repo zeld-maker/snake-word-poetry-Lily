@@ -872,7 +872,7 @@ export default function Home() {
       <CardContent className="px-4 pb-4 space-y-3">
         {/* Language filter */}
         <div>
-          <p className="text-xs text-[#8a8575] mb-1.5">语言<span className="text-[#b0a890]">（收集相对应语言的单词，创作诗歌时可以重新选择语言）</span></p>
+          <p className="text-xs text-[#8a8575] mb-1.5 whitespace-nowrap">语言<span className="text-[#b0a890]">（收集相对应语言的单词，创作诗歌时可以重新选择语言）</span></p>
           <div className="flex gap-2">
             {([
               { key: 'zh' as WordLanguage, label: '中文', icon: '🇨🇳' },
@@ -898,7 +898,7 @@ export default function Home() {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <p className="text-xs text-[#8a8575]">
-              主题 <span className="text-[#b0a890]">（可多选·全不选则随机抽取主题）</span>
+              主题 <span className="text-[#b0a890] whitespace-nowrap">（可多选·全不选则随机抽取主题）</span>
             </p>
             <div className="flex gap-2">
               <button
@@ -953,7 +953,7 @@ export default function Home() {
       </div>
 
       {/* Main Layout */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start justify-center w-full max-w-5xl mx-auto">
+      <div className="flex flex-col lg:flex-row gap-6 items-start justify-center w-full max-w-6xl mx-auto">
         {/* Game Area */}
         <div className="flex flex-col items-center">
           {/* Score Panel */}
@@ -1071,7 +1071,7 @@ export default function Home() {
         </div>
 
         {/* Right Panel */}
-        <div className="w-full lg:w-80 flex flex-col gap-4">
+        <div className="w-full lg:w-[420px] flex flex-col gap-4">
           {/* Desktop: Theme Selector inside panel */}
           <div className="hidden lg:block">
             {renderThemeSelector()}
@@ -1081,7 +1081,7 @@ export default function Home() {
           <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-base flex items-center justify-between text-[#36454f]">
-                <span>📦 词匣子<span className="text-[10px] font-normal text-[#b0a890]">（单击单词可删除）</span></span>
+                <span>📦 词匣子<span className="text-[10px] font-normal text-[#b0a890] whitespace-nowrap">（单击单词可删除）</span></span>
                 <span className="text-sm font-normal text-[#8a8575]">
                   {wordProgress}/{WORDS_TO_POEM}
                 </span>
@@ -1174,7 +1174,7 @@ export default function Home() {
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-[#b0a890] mt-1">
+                <p className="text-[10px] text-[#b0a890] mt-1 whitespace-nowrap">
                   {POEM_FORMS[poemForm].desc} · 诗歌语言：{wordLanguage === 'zh' ? '纯中文' : wordLanguage === 'en' ? '纯英文' : '中英混合'}
                 </p>
               </div>
