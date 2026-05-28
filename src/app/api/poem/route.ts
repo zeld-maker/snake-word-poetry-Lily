@@ -2,6 +2,25 @@ import ZAI from 'z-ai-web-dev-sdk'
 
 type PoemForm = 'auto' | 'fivechar' | 'sevenchar' | 'changgu' | 'modern' | 'sonnet' | 'haiku' | 'ballad' | 'limerick' | 'villanelle'
 
+// ─── Helper: detect if a word is Chinese ──────────────────────────
+function isChineseWord(word: string): boolean {
+  return /[\u4e00-\u9fff]/.test(word)
+}
+
+// ─── Helper: classify words by language ───────────────────────────
+function classifyWords(words: string[]): { zhWords: string[]; enWords: string[] } {
+  const zhWords: string[] = []
+  const enWords: string[] = []
+  for (const w of words) {
+    if (isChineseWord(w)) {
+      zhWords.push(w)
+    } else {
+      enWords.push(w)
+    }
+  }
+  return { zhWords, enWords }
+}
+
 export async function POST(request: Request) {
   try {
     const { words, language, form } = await request.json()
@@ -13,9 +32,23 @@ export async function POST(request: Request) {
     const zai = await ZAI.create()
 
     const poemForm = (form as PoemForm) || 'auto'
+    const { zhWords, enWords } = classifyWords(words)
 
     // ─── Common rule: no asterisks around keywords ─────────────
     const noAsteriskRule = `\n\n【重要格式规则】绝对不要在任何关键词周围加星号(*)或任何标记符号，关键词应该自然融入诗文中，不加任何特殊标记。`
+
+    // ─── Language mismatch handling ─────────────────────────────
+    // When the target language differs from some collected words,
+    // instruct the LLM to translate/skip as needed
+    const languageMismatchInstruction = (() => {
+      if (language === 'zh' && enWords.length > 0) {
+        return `\n\n【语言规则】本诗必须完全使用中文创作。以下关键词中有英文词汇：${enWords.join('、')}。请将这些英文词翻译为对应的中文表达后融入诗中（例如 moon→月，river→河，ocean→海）。如果某个英文词无法自然翻译，可以不使用该词，但其余词汇必须全部融入。诗中不得出现任何英文单词。`
+      }
+      if (language === 'en' && zhWords.length > 0) {
+        return `\n\n【Language Rule】This poem MUST be written ENTIRELY in English. Among the given words, some are Chinese: ${zhWords.join(', ')}. Please translate these Chinese words into their English equivalents and use the English versions in the poem (e.g., 月光→moonlight, 清风→breeze, 落花→fallen petals). If a Chinese word cannot be naturally translated, you may omit it, but incorporate all others. No Chinese characters should appear in the poem.`
+      }
+      return ''
+    })()
 
     // ─── Form-specific instructions ────────────────────────────
     const formInstructions: Record<PoemForm, string> = {
@@ -82,12 +115,23 @@ export async function POST(request: Request) {
 4. The couplet at the end should deliver a twist or summary
 5. Add (Sonnet) at the end`,
 
-      haiku: `【Must write a haiku sequence】Rules:
-1. Write 2-3 haiku, each following the 5-7-5 syllable pattern
-2. Each haiku should capture a moment, image, or sensation from the given words
-3. Include a kigo (season word) or nature reference if possible
-4. Show, don't tell — use concrete imagery
-6. Add (Haiku) at the end`,
+      haiku: `【Must write a haiku sequence — STRICT SYLLABLE COUNT REQUIRED】Rules:
+
+1. Write 2-3 independent haiku, each EXACTLY 3 lines following the 5-7-5 syllable pattern
+2. SYLLABLE COUNTING IS THE MOST IMPORTANT RULE. Count every single syllable carefully:
+   - Line 1: EXACTLY 5 syllables (e.g., "The old si-lent pond" = 5 ✓ | "The very old si-lent pond" = 6 ✗)
+   - Line 2: EXACTLY 7 syllables (e.g., "A frog jumps in-to the wa-ter" = 7 ✓ | "A small frog jumps in-to the wa-ter" = 8 ✗)
+   - Line 3: EXACTLY 5 syllables (e.g., "Sound of the deep splash" = 5 ✓ | "The sound of the deep splash" = 6 ✗)
+3. Before writing each line, COUNT THE SYLLABLES OUT LOUD. Double-check your count.
+4. If a word has unclear syllable count, choose a simpler word.
+5. Each haiku should capture a moment, image, or sensation — show, don't tell
+6. Include a kigo (season word) or nature reference if possible
+7. Do NOT add extra words to make lines "sound better" if it breaks the syllable count
+8. Example of a correct haiku:
+   Auto-mn moon-light falls (5)
+   On the si-lent moun-tain lake (7)
+   Ri-ples in the dark (5)
+9. Add (Haiku) at the end`,
 
       ballad: `【Must write a ballad】Rules:
 1. Write 3-4 quatrains (4-line stanzas)
@@ -132,19 +176,19 @@ export async function POST(request: Request) {
     if (language === 'zh') {
       systemPrompt = `你是一位精通中国古典诗词和现代诗歌的诗人。${formInstruction || `你可以自由选择写五言绝句、五言律诗、七言绝句、七言律诗、歌行体古风或现代诗。如果写古体诗，必须严格遵守押韵和平仄规则。如果写现代诗，不要求押韵，但要有诗意和节奏。诗末用括号注明诗体。`}
 
-无论选择何种体裁，都必须将所有给定的关键词自然融入诗中。${noAsteriskRule}`
+无论选择何种体裁，都必须将所有给定的关键词自然融入诗中。${languageMismatchInstruction}${noAsteriskRule}`
 
       userPrompt = `请根据以下关键词创作一首中文诗歌：${words.join('、')}
 
-${formInstruction ? '请严格按照指定体裁创作。' : '请自由选择最合适的诗体创作。'}将所有关键词自然融入诗中，不要给关键词加任何标记符号。`
+${formInstruction ? '请严格按照指定体裁创作。' : '请自由选择最合适的诗体创作。'}将所有关键词自然融入诗中，不要给关键词加任何标记符号。${enWords.length > 0 ? `\n\n注意：英文关键词需要翻译为中文后使用，诗中不能出现英文。` : ''}`
     } else if (language === 'en') {
       systemPrompt = `You are a talented poet who creates beautiful, evocative English poems. ${formInstruction || `You may choose any form — sonnet, ballad, free verse, haiku, etc. Pay attention to rhythm, meter, and musicality. If you write in a traditional form, follow its conventions carefully. If free verse, focus on vivid imagery and emotional resonance. Add the form name in parentheses at the end.`}
 
-Weave ALL the given words naturally into the poem. Make it feel like the words naturally belong together.${noAsteriskRule}`
+Weave ALL the given words naturally into the poem. Make it feel like the words naturally belong together.${languageMismatchInstruction}${noAsteriskRule}`
 
       userPrompt = `Create a poem inspired by these words: ${words.join(', ')}
 
-${formInstruction ? 'Follow the specified form strictly.' : 'Choose the best form for these words.'} Include all the given words naturally — do NOT add asterisks or any special markers around them.`
+${formInstruction ? 'Follow the specified form strictly.' : 'Choose the best form for these words.'} Include all the given words naturally — do NOT add asterisks or any special markers around them.${zhWords.length > 0 ? `\n\nNote: Chinese words in the list must be translated to their English equivalents. The poem must be written entirely in English with no Chinese characters.` : ''}`
     } else {
       // mixed
       systemPrompt = `你是一位精通中英双语诗歌的诗人。你可以创作中英文混合的诗歌，让两种语言自然交织、融为一体。
