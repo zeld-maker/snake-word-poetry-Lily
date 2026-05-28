@@ -666,10 +666,66 @@ export default function Home() {
 
   const wordProgress = Math.min(collectedWords.length, WORDS_TO_POEM)
 
+  // ─── Theme Selector Render ────────────────────────────────────────
+  const renderThemeSelector = () => (
+    <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
+      <CardHeader className="pb-2 pt-4 px-4">
+        <CardTitle className="text-base text-[#36454f]">
+          🎨 词库主题
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="px-4 pb-4 space-y-3">
+        {/* Language filter */}
+        <div>
+          <p className="text-xs text-[#8a8575] mb-1.5">语言</p>
+          <div className="flex gap-2">
+            {([
+              { key: 'all' as WordLanguage, label: '中英混合', icon: '🌏' },
+              { key: 'zh' as WordLanguage, label: '中文', icon: '🇨🇳' },
+              { key: 'en' as WordLanguage, label: 'English', icon: '🇬🇧' },
+            ]).map(({ key, label, icon }) => (
+              <button
+                key={key}
+                onClick={() => setWordLanguage(key)}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                  wordLanguage === key
+                    ? 'bg-[#36454f] text-[#f5f0e1] shadow-sm'
+                    : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
+                }`}
+              >
+                {icon} {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Theme filter */}
+        <div>
+          <p className="text-xs text-[#8a8575] mb-1.5">主题</p>
+          <div className="flex flex-wrap gap-1.5">
+            {(Object.entries(WORD_THEMES) as [WordTheme, typeof WORD_THEMES[WordTheme]][]).map(([key, { label, icon }]) => (
+              <button
+                key={key}
+                onClick={() => setWordTheme(key)}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                  wordTheme === key
+                    ? 'bg-[#36454f] text-[#f5f0e1] shadow-sm'
+                    : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
+                }`}
+              >
+                {icon} {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f5f0e1] via-[#ede8d8] to-[#f5f0e1] p-4 sm:p-6">
       {/* Header */}
-      <header className="mb-6 text-center">
+      <header className="mb-4 sm:mb-6 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold text-[#36454f] tracking-tight">
           🐍 诗意贪吃蛇
         </h1>
@@ -677,6 +733,11 @@ export default function Home() {
           吃掉单词，收集灵感，创作诗歌 ✨
         </p>
       </header>
+
+      {/* Mobile: Theme Selector above game */}
+      <div className="w-full max-w-md mx-auto lg:hidden mb-4">
+        {renderThemeSelector()}
+      </div>
 
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row gap-6 items-start justify-center w-full max-w-5xl mx-auto">
@@ -791,59 +852,10 @@ export default function Home() {
 
         {/* Right: Panel */}
         <div className="w-full lg:w-80 flex flex-col gap-4">
-          {/* ─── Theme Selector ──────────────────────────────── */}
-          <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
-            <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-base text-[#36454f]">
-                🎨 词库主题
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4 space-y-3">
-              {/* Language filter */}
-              <div>
-                <p className="text-xs text-[#8a8575] mb-1.5">语言</p>
-                <div className="flex gap-2">
-                  {([
-                    { key: 'all' as WordLanguage, label: '中英混合', icon: '🌏' },
-                    { key: 'zh' as WordLanguage, label: '中文', icon: '🇨🇳' },
-                    { key: 'en' as WordLanguage, label: 'English', icon: '🇬🇧' },
-                  ]).map(({ key, label, icon }) => (
-                    <button
-                      key={key}
-                      onClick={() => setWordLanguage(key)}
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                        wordLanguage === key
-                          ? 'bg-[#36454f] text-[#f5f0e1] shadow-sm'
-                          : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
-                      }`}
-                    >
-                      {icon} {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Theme filter */}
-              <div>
-                <p className="text-xs text-[#8a8575] mb-1.5">主题</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {(Object.entries(WORD_THEMES) as [WordTheme, typeof WORD_THEMES[WordTheme]][]).map(([key, { label, icon }]) => (
-                    <button
-                      key={key}
-                      onClick={() => setWordTheme(key)}
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                        wordTheme === key
-                          ? 'bg-[#36454f] text-[#f5f0e1] shadow-sm'
-                          : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
-                      }`}
-                    >
-                      {icon} {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Desktop: Theme Selector */}
+          <div className="hidden lg:block">
+            {renderThemeSelector()}
+          </div>
 
           {/* ─── Word Collection Box ─────────────────────────── */}
           <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
