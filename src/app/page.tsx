@@ -241,8 +241,10 @@ function getRandomWord(
   lang: WordLanguage,
   exclude: string[]
 ): string {
+  // Fall back to all themes if none selected
+  const activeThemes = themes.length > 0 ? themes : (Object.keys(WORD_THEMES) as WordTheme[])
   let words: string[] = []
-  for (const theme of themes) {
+  for (const theme of activeThemes) {
     const pool = WORD_THEMES[theme]
     if (lang === 'zh') {
       words = words.concat(pool.zh)
@@ -511,8 +513,8 @@ export default function Home() {
   const [collectedWords, setCollectedWords] = useState<string[]>([])
   const [poem, setPoem] = useState<string>('')
   const [isGeneratingPoem, setIsGeneratingPoem] = useState(false)
-  const [wordLanguage, setWordLanguage] = useState<WordLanguage>('all')
-  const [selectedThemes, setSelectedThemes] = useState<WordTheme[]>(['nature', 'season', 'mood', 'cosmos', 'journey', 'myth', 'time', 'teawine', 'deepsea', 'music', 'city', 'wuxia', 'film'])
+  const [wordLanguage, setWordLanguage] = useState<WordLanguage>('zh')
+  const [selectedThemes, setSelectedThemes] = useState<WordTheme[]>([])
   const [poemForm, setPoemForm] = useState<PoemForm>('auto')
   const [copied, setCopied] = useState(false)
 
@@ -523,8 +525,6 @@ export default function Home() {
   const toggleTheme = useCallback((theme: WordTheme) => {
     setSelectedThemes(prev => {
       if (prev.includes(theme)) {
-        // Don't allow deselecting all themes
-        if (prev.length <= 1) return prev
         return prev.filter(t => t !== theme)
       } else {
         return [...prev, theme]
@@ -535,6 +535,11 @@ export default function Home() {
   // Select all themes
   const selectAllThemes = useCallback(() => {
     setSelectedThemes(Object.keys(WORD_THEMES) as WordTheme[])
+  }, [])
+
+  // Deselect all themes
+  const deselectAllThemes = useCallback(() => {
+    setSelectedThemes([])
   }, [])
 
   // Sync ref with state
@@ -857,14 +862,8 @@ export default function Home() {
   const renderThemeSelector = () => (
     <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
       <CardHeader className="pb-2 pt-4 px-4">
-        <CardTitle className="text-base flex items-center justify-between text-[#36454f]">
-          <span>🎨 词库主题</span>
-          <button
-            onClick={selectAllThemes}
-            className="text-xs font-normal text-[#8a8575] hover:text-[#36454f] transition-colors"
-          >
-            {selectedThemes.length === Object.keys(WORD_THEMES).length ? '已全选' : '全选'}
-          </button>
+        <CardTitle className="text-base text-[#36454f]">
+          🎨 词库主题
         </CardTitle>
       </CardHeader>
       <CardContent className="px-4 pb-4 space-y-3">
@@ -873,9 +872,9 @@ export default function Home() {
           <p className="text-xs text-[#8a8575] mb-1.5">语言</p>
           <div className="flex gap-2">
             {([
-              { key: 'all' as WordLanguage, label: '中英混合', icon: '🌏' },
               { key: 'zh' as WordLanguage, label: '中文', icon: '🇨🇳' },
               { key: 'en' as WordLanguage, label: 'English', icon: '🇬🇧' },
+              { key: 'all' as WordLanguage, label: '中英混合', icon: '🌏' },
             ]).map(({ key, label, icon }) => (
               <button
                 key={key}
@@ -894,9 +893,25 @@ export default function Home() {
 
         {/* Theme filter — multi-select */}
         <div>
-          <p className="text-xs text-[#8a8575] mb-1.5">
-            主题 <span className="text-[#b0a890]">（可多选）</span>
-          </p>
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="text-xs text-[#8a8575]">
+              主题 <span className="text-[#b0a890]">（可多选）</span>
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={selectAllThemes}
+                className="text-xs font-normal text-[#8a8575] hover:text-[#36454f] transition-colors"
+              >
+                {selectedThemes.length === Object.keys(WORD_THEMES).length ? '已全选' : '全选'}
+              </button>
+              <button
+                onClick={deselectAllThemes}
+                className="text-xs font-normal text-[#8a8575] hover:text-[#36454f] transition-colors"
+              >
+                取消全选
+              </button>
+            </div>
+          </div>
           <div className="flex flex-wrap gap-1.5">
             {(Object.entries(WORD_THEMES) as [WordTheme, typeof WORD_THEMES[WordTheme]][]).map(([key, { label, icon }]) => (
               <button
