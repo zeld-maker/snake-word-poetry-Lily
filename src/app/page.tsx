@@ -734,10 +734,15 @@ export default function Home() {
         </p>
       </header>
 
+      {/* Mobile: Theme Selector between header and game */}
+      <div className="w-full max-w-md mx-auto lg:hidden mb-4">
+        {renderThemeSelector()}
+      </div>
+
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row gap-6 items-start justify-center w-full max-w-5xl mx-auto">
-        {/* Game Area — order-2 on mobile (below panel), order-1 on desktop (left) */}
-        <div className="flex flex-col items-center order-2 lg:order-1">
+        {/* Game Area */}
+        <div className="flex flex-col items-center">
           {/* Score Panel */}
           <div className="flex gap-4 mb-4">
             <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
@@ -845,10 +850,12 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Panel — order-1 on mobile (above game), order-2 on desktop (right) */}
-        <div className="w-full lg:w-80 flex flex-col gap-4 order-1 lg:order-2">
-          {/* Theme Selector (always visible, above game on mobile, in panel on desktop) */}
-          {renderThemeSelector()}
+        {/* Right Panel */}
+        <div className="w-full lg:w-80 flex flex-col gap-4">
+          {/* Desktop: Theme Selector inside panel */}
+          <div className="hidden lg:block">
+            {renderThemeSelector()}
+          </div>
 
           {/* ─── Word Collection Box ─────────────────────────── */}
           <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
