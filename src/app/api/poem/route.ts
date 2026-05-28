@@ -105,14 +105,16 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 6. 句式可以灵活变化，允许长短句交替
 7. 请在诗末注明（歌行体）或（古风）
 
-【歌行体示例】（节选，展示换韵与长短句交替）：
+【歌行体完整示例】（展示换韵与七言为主的格式）：
 君不见黄河之水天上来（7字）— 押A韵
 奔流到海不复回（7字）— 押A韵
 君不见高堂明镜悲白发（7字）— 换B韵
 朝如青丝暮成雪（7字）— 押B韵
 人生得意须尽欢（7字）— 换C韵
 莫使金樽空对月（7字）— 押C韵
-……（篇幅可自由延伸）
+天生我材必有用（7字）— 换D韵
+千金散尽还复来（7字）— 押D韵
+……（篇幅可自由延伸，可继续换韵）
 
 这是最适合8个关键词的体裁，因为有足够的篇幅自然融入所有关键词。`,
 
@@ -124,7 +126,7 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 5. 可以使用跨行、断句等现代诗技巧
 6. 诗末用括号注明（现代诗）
 
-【现代诗示例】：
+【现代诗完整示例】：
 从远方来的人
 带着海的盐味
 和风的形状
@@ -138,8 +140,8 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 都有了翅膀`,
   }
 
-  // Bilingual forms: have both Chinese and English versions
-  const bilingualForms: Record<string, { zh: string; en: string }> = {
+  // Bilingual forms: have Chinese, English, and Mixed versions
+  const bilingualForms: Record<string, { zh: string; en: string; mixed: string }> = {
 
     sonnet: {
       zh: `【必须写中文十四行诗】将莎士比亚十四行诗的体例改编为中文创作。详细规则：
@@ -152,11 +154,25 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 6. 每个四行诗节应推进一层意思
 7. 请在诗末注明（十四行诗）
 
-示例韵脚格式：
-第1节：A末-B末-A末-B末（如：光-香-方-长）
-第2节：C末-D末-C末-D末
-第3节：E末-F末-E末-F末
-第4节：G末-G末`,
+【完整示例】（14行，每行10字，ABAB CDCD EFEF GG）：
+第1节：
+月落星沉时分满庭芬芳（10字 ✓）A-芳(fāng)
+谁在远方独自诉说离愁（10字 ✓）B-愁(chóu)
+春风送来阵阵花的幽香（10字 ✓）A-香(xiāng)
+思念如同河水日夜东流（10字 ✓）B-流(liú)
+第2节：
+夜深露重霜气透骨清寒（10字 ✓）C-寒(hán)
+孤雁南飞何日才能北归（10字 ✓）D-归(guī)
+往事如烟岁月早已凋残（10字 ✓）C-残(cán)
+望断天涯唯有落花纷飞（10字 ✓）D-飞(fēi)
+第3节：
+岁月匆匆世事总是难寻（10字 ✓）E-寻(xún)
+只盼春风再度百花重开（10字 ✓）F-开(kāi)
+长路漫漫何处才是情深（10字 ✓）E-深(shēn)
+纵使千山万水我也走来（10字 ✓）F-来(lái)
+第4节（对句）：
+此情此意年年愈加深浓（10字 ✓）G-浓(nóng)
+唯愿君心与我永世相同（10字 ✓）G-同(tóng)`,
 
       en: `【Must write a Shakespearean sonnet — STRICT FORM REQUIRED】Rules:
 
@@ -166,18 +182,44 @@ function getFormInstruction(form: PoemForm, language: PoemLanguage): string {
 4. Each quatrain should develop the theme; the couplet should deliver a twist or summary
 5. COUNT SYLLABLES on every line before finalizing. 10 syllables per line is NON-NEGOTIABLE.
 
-Example of correct iambic pentameter:
-   "Shall I com-pare thee to a sum-mer's day?" (10 syllables ✓)
-   "The love that I have for you will never die" (10 syllables ✓ — wait, that's 11! ✗)
-   "The love I bear for you will ne-ver die" (10 syllables ✓)
-
-Example rhyme scheme structure:
-   Quatrain 1: day(A) — tem-plate(B) — May(A) — re-late(B)
-   Quatrain 2: shine(C) — dim(D) — di-vine(C) — trim(D)
-   Quatrain 3: so(E) — blind(F) — grow(E) — mind(F)
-   Couplet:    see(G) — thee(G)
+【Complete Example】(14 lines, 10 syllables each, ABAB CDCD EFEF GG):
+Quatrain 1:
+The morn-ing sun a-wakes the sleep-ing land (10 ✓) A
+And gold-en rays dance on the qui-et sea (10 ✓) B
+I feel the warmth of na-ture's gen-tle hand (10 ✓) A
+As wind and wa-ter sing in har-mo-ny (10 ✓) B
+Quatrain 2:
+The ros-es bloom a-long the gar-den wall (10 ✓) C
+Their fra-grance float-ing on the sum-mer air (10 ✓) D
+I hear the an-cient o-cean's dis-tant call (10 ✓) C
+And find a mo-ment's peace be-yond com-pare (10 ✓) D
+Quatrain 3:
+Yet sha-dows creep a-cross the fade-ing day (10 ✓) E
+The si-lence grows be-neath the tree-tops high (10 ✓) F
+And all the col-ors wash in gray a-way (10 ✓) E
+As eve-ning stars a-wak-en in the sky (10 ✓) F
+Couplet:
+So let us hold this fleet-ing mo-ment fast (10 ✓) G
+For beau-ty fades but mem-o-ry will last (10 ✓) G
 
 6. Add (Sonnet) at the end`,
+
+      mixed: `【必须写中英混合十四行诗】将莎士比亚十四行诗改编为中英混合创作。规则：
+
+1. 共14行：三个四行诗节 + 一个两行对句
+2. 韵脚遵循 ABAB CDCD EFEF GG（中英文行之间也需要押韵或谐音押韵）
+3. 中英文自然交织，可以一行中文一行英文，或在同一行中混用
+4. 中文行约10字，英文行约10音节，混合行总长度相当
+5. 最后两行对句点题或反转
+6. 请在诗末注明（十四行诗·混合）
+
+【混合示例】（节选第1节，ABAB韵）：
+月落星沉满庭芬芳（中文10字）A-芳(fāng)
+And si-lence falls a-cross the sea（英文10音节）B-sea
+春风送来花的幽香（中文10字）A-香(xiāng)
+The mem-o-ries re-turn to me（英文10音节）B-me
+
+（注：中文A韵行互相押韵，英文B韵行互相押韵；中英文行交替出现，形成对话感）`,
     },
 
     haiku: {
@@ -217,29 +259,64 @@ Example rhyme scheme structure:
 5. Each haiku should capture a moment, image, or sensation — show, don't tell
 6. Include a kigo (season word) or nature reference if possible
 7. Do NOT add extra words to make lines "sound better" if it breaks the syllable count
-8. Example of a correct haiku:
-   Au-tumn moon-light falls (5)
-   On the si-lent moun-tain lake (7)
-   Ri-ples in the dark (5)
-9. Add (Haiku) at the end`,
+
+【Complete Example】:
+Haiku 1:
+Au-tumn moon-light falls (5 ✓)
+On the si-lent moun-tain lake (7 ✓)
+Ri-ples in the dark (5 ✓)
+
+Haiku 2:
+Cher-ry blos-soms drift (5 ✓)
+A gen-tle breeze a-cross the hill (7 ✓)
+Pet-als on the stream (5 ✓)
+
+8. Add (Haiku) at the end`,
+
+      mixed: `【必须写中英混合俳句】规则：
+
+1. 创作2-3首俳句，每首3行
+2. 中文行严格5或7字，英文行严格5或7音节
+3. 第一行5字/音节，第二行7字/音节，第三行5字/音节
+4. 中英文自然交织，可以在不同行交替使用两种语言
+
+【混合完整示例】：
+秋月照寒潭（中文5字）
+A si-lent ri-pple on the lake（英文7音节）
+涟漪入夜寒（中文5字）
+
+（注：中文行严格遵守字数，英文行严格遵守音节数，两种语言在5-7-5框架内自由交替）`,
     },
 
     ballad: {
       zh: `【必须写中文民谣体诗歌】将英式民谣体（Ballad）改编为中文创作。详细规则：
 
 1. 写3-4节，每节4行
-2. 【中文格律】奇数行7字，偶数行7字（或奇数行7字偶数行5字，形成长短交错）
-3. 韵脚：第二、四行末字必须押韵（ABCB或ABAB），韵脚属同一韵部
+2. 【中文格律】奇数行7字，偶数行5字（形成长短交错的民谣节奏感）；也可全部7字
+3. 韵脚：第二、四行末字必须押韵（ABCB），首行也可押韵（ABAB），韵脚属同一韵部
 4. 民谣体重在叙事——要有起承转合的故事感
 5. 语言要朴素、直接、生动，避免过于华丽
 6. 可以使用反复出现的诗句作为"副歌"
 7. 请在诗末注明（民谣体）
 
-示例格式（ABCB韵）：
-七字某某某某某（A）
-七字某某某某香（B押韵）
-七字某某某某某（C）
-七字某某某某长（B押韵）`,
+【完整示例】（3节，ABCB韵，7-5-7-5字数交替）：
+第1节：
+秋风吹过古城墙（7字）
+月下独含愁（5字）B-愁(chóu)
+落叶纷飞伴夕阳（7字）
+思念向东流（5字）B-流(liú)
+
+第2节：
+雁阵南飞过远山（7字）
+何日把家归（5字）D-归(guī)
+往事如烟渐凋残（7字）
+落花随风飞（5字）D-飞(fēi)
+
+第3节：
+千里迢迢路漫长（7字）
+独自守空门（5字）E-门(mén)
+不知何日返故乡（7字）
+月下盼归人（5字）E-人(rén)`,
 
       en: `【Must write a ballad — STRICT FORM REQUIRED】Rules:
 
@@ -251,13 +328,41 @@ Example rhyme scheme structure:
 6. Use simple, direct, and vivid language
 7. The refrain or repeated element is optional but effective
 
-Example (ABCB rhyme, 8/6/8/6 syllables):
-   The wind blew through the val-ley (8, A)
-   And swept the a-way the snow (6, B)
-   The trav-el-er walked in si-lence (8, C)
-   With no-where left to go (6, B)
+【Complete Example】(3 stanzas, ABCB rhyme, 8/6/8/6 syllables):
+Stanza 1:
+The cold wind blew through the val-ley (8, A)
+And swept a-way the snow (6, B)
+The trav-el-er walked in si-lence (8, C)
+With no-where left to go (6, B)
+
+Stanza 2:
+He passed the bro-ken stone bridg-es (8, D)
+And hous-es fall-en down (6, E)
+He heard the church bells soft-ly ring (8, F)
+A-bove the sleep-y town (6, E)
+
+Stanza 3:
+He fi-nal-ly found a can-dle (8, G)
+That burned be-hind the door (6, H)
+A voice said come and rest here now (8, I)
+You need not wan-der more (6, H)
 
 8. Add (Ballad) at the end`,
+
+      mixed: `【必须写中英混合民谣体】规则：
+
+1. 写3-4节，每节4行
+2. 第二、四行末字/词押韵（ABCB）
+3. 中文行7字或5字，英文行8音节或6音节，长短交替
+4. 中英文自然交替，可以中文叙事、英文抒情，形成对话感
+5. 语言朴素生动，有故事感
+6. 请在诗末注明（民谣体·混合）
+
+【混合示例】（节选第1节，ABCB韵）：
+秋风吹过古城墙（中文7字）
+The au-tumn wind is cold and gray（英文8音节）B-gray
+落叶纷飞伴夕阳（中文7字）
+A thou-sand miles a-way（英文5音节）B-away`,
     },
 
     limerick: {
@@ -270,12 +375,14 @@ Example (ABCB rhyme, 8/6/8/6 syllables):
 5. 最后一行最好有意想不到的转折
 6. 韵脚使用同一韵部，不可串韵
 
-示例格式：
-某某某某某某猫（A押韵）
-某某某某某某逃（A押韵）
-某某某某跑（B押韵）
-某某某某叫（B押韵）
-某某某某某某高（A押韵）
+【完整示例】：
+隔壁老张养金鱼（7字）A-鱼(yú)
+鱼缸放在小窗居（7字）A-居(jū)
+来了一只猫（5字）B-猫(māo)
+吓得鱼想逃（5字）B-逃(táo)
+满地碎片水空余（7字）A-余(yú)
+
+（注：A韵"鱼、居、余"同属中华新韵"迂"韵部 ✓，B韵"猫、逃"同属"凹"韵部 ✓）
 
 7. 请在诗末注明（打油诗）`,
 
@@ -288,13 +395,32 @@ Example (ABCB rhyme, 8/6/8/6 syllables):
 5. COUNT SYLLABLES on every line. The pattern must be: long-long-short-short-long
 6. The tone should be humorous, witty, or whimsical
 7. The best limericks have a surprising twist in the last line
-8. Example:
-   A won-drous crea-ture named Ned (8, A)
-   Had a ver-y large bump on his head (9, A)
-   He bumped in-to doors (5, B)
-   And fell on all fours (5, B)
-   And wished he were home in his bed (9, A)
-9. Add (Limerick) at the end`,
+
+【Complete Example】:
+A won-drous crea-ture named Ned (8, A)
+Had a ver-y large bump on his head (9, A)
+He bumped in-to doors (5, B)
+And fell on all fours (5, B)
+And wished he were home in his bed (9, A)
+
+8. Add (Limerick) at the end`,
+
+      mixed: `【必须写中英混合打油诗】规则：
+
+1. 写1-2首打油诗，每首5行，AABBA韵
+2. 第一、二、五行：中文7字或英文8-9音节；第三、四行：中文5字或英文5-6音节
+3. 中英文交替使用，同韵脚行之间需要押韵（中文押韵母，英文押尾音）
+4. 风格幽默诙谐，最后一行有意想不到的转折
+5. 请在诗末注明（打油诗·混合）
+
+【混合完整示例】：
+隔壁老张养金鱼（中文7字）A-鱼(yú)
+His fish bowl sat by the win-dow pane（英文9音节）A-pane
+来了一只猫（中文5字）B-猫(māo)
+It tried to run a-way（英文5音节）B-way
+满地碎片水空余（中文7字）A-余(yú)
+
+（注：A韵中文行互押"鱼-余"，英文行可独立押韵；B韵中文"猫"与英文"away"形成跨语言谐趣对照）`,
     },
 
     villanelle: {
@@ -315,25 +441,39 @@ Example (ABCB rhyme, 8/6/8/6 syllables):
 7. 叠句应当在重复中逐渐累积新的含义
 8. 请在诗末注明（维拉内拉）
 
-【维拉内拉示例】（节选结构，7字×19行）：
+【完整示例】（19行，每行7字，A韵=ang，b韵=huái）：
 第1节：
-　　月光洒满旧城墙（A韵）← 叠句一
-　　谁在风中独徘徊（b韵）
-　　回忆如潮不可挡（A韵）← 叠句二
+月光洒满旧城墙（7字）A-墙(qiáng) ← 叠句一
+谁在风中独徘徊（7字）b-徊(huái)
+回忆如潮不可挡（7字）A-挡(dǎng) ← 叠句二
+
 第2节：
-　　岁月无声自流淌（A韵）
-　　谁在风中独徘徊（b韵）
-　　月光洒满旧城墙（叠句一原样重复）
+岁月无声自流淌（7字）A-淌(tǎng)
+谁在风中独徘徊（7字）b-徊
+月光洒满旧城墙（7字）叠句一
+
 第3节：
-　　花开花落又一霜（A韵）
-　　谁在风中独徘徊（b韵）
-　　回忆如潮不可挡（叠句二原样重复）
-……（第4-5节同理交替）
+花开花落又一霜（7字）A-霜(shuāng)
+谁在风中独徘徊（7字）b-徊
+回忆如潮不可挡（7字）叠句二
+
+第4节：
+古道西风夜正凉（7字）A-凉(liáng)
+谁在风中独徘徊（7字）b-徊
+月光洒满旧城墙（7字）叠句一
+
+第5节：
+星河万里夜未央（7字）A-央(yāng)
+谁在风中独徘徊（7字）b-徊
+回忆如潮不可挡（7字）叠句二
+
 第6节（末节）：
-　　纵然前路两茫茫（A韵）
-　　谁在风中独徘徊（b韵）
-　　月光洒满旧城墙（叠句一）
-　　回忆如潮不可挡（叠句二）`,
+纵然前路两茫茫（7字）A-茫(máng)
+谁在风中独徘徊（7字）b-徊
+月光洒满旧城墙（7字）叠句一
+回忆如潮不可挡（7字）叠句二
+
+（注：A韵"墙、挡、淌、霜、凉、央、茫"同属中华新韵"昂"韵部 ✓，b韵"徊"属"开"韵部，与A韵不同 ✓）`,
 
       en: `【Must write a villanelle — STRICT FORM REQUIRED】Rules:
 
@@ -352,19 +492,66 @@ Example (ABCB rhyme, 8/6/8/6 syllables):
 6. Each line should be in iambic pentameter (10 syllables, da-DUM pattern)
 7. The refrains should be evocative lines that gain meaning with each repetition
 
-Example (excerpt showing refrain repetition pattern):
-   Stanza 1:                    Stanza 2:
-   The night is dark and cold (A¹)   The stars be-gin to fade (a)
-   Yet still I walk a-lone (b)       Yet still I walk a-lone (b)
-   My sto-ry must be told (A²)       The night is dark and cold (A¹, exact repeat)
+【Complete Example】(19 lines, 10 syllables each):
+Stanza 1:
+The stars be-gin to fade a-way from sight (10) A¹
+While au-tumn leaves are scat-tered all a-round (10) b
+And still I walk a-lone through end-less night (10) A²
 
-   Stanza 6 (final quatrain):
-   Let truth at last be bold (a)
-   Yet still I walk a-lone (b)
-   The night is dark and cold (A¹, exact repeat)
-   My sto-ry must be told (A², exact repeat)
+Stanza 2:
+The sha-dows stretch a-cross the fad-ing light (10) a
+While au-tumn leaves are scat-tered all a-round (10) b
+The stars be-gin to fade a-way from sight (10) A¹
+
+Stanza 3:
+Each step I take now e-choes in-to flight (10) a
+While au-tumn leaves are scat-tered all a-round (10) b
+And still I walk a-lone through end-less night (10) A²
+
+Stanza 4:
+The mem-o-ries of days that burned so bright (10) a
+While au-tumn leaves are scat-tered all a-round (10) b
+The stars be-gin to fade a-way from sight (10) A¹
+
+Stanza 5:
+A dis-tant can-dle glows with an-cient might (10) a
+While au-tumn leaves are scat-tered all a-round (10) b
+And still I walk a-lone through end-less night (10) A²
+
+Stanza 6 (final quatrain):
+Let hope re-main when no-thing else seems right (10) a
+While au-tumn leaves are scat-tered all a-round (10) b
+The stars be-gin to fade a-way from sight (10) A¹
+And still I walk a-lone through end-less night (10) A²
 
 8. Add (Villanelle) at the end`,
+
+      mixed: `【必须写中英混合维拉内拉】规则：
+
+1. 共19行：五个三行诗节 + 一个四行诗节
+2. 全诗只用两个韵，叠句必须原样重复
+3. 中文行7字，英文行10音节
+4. 中英文可以交替出现，叠句保持语言一致（便于原样重复）
+5. A韵行中文互押、英文互押；b韵行同理
+6. 请在诗末注明（维拉内拉·混合）
+
+【混合示例】（节选第1-3节，展示中英交替与叠句结构）：
+第1节：
+月光洒满旧城墙（中文7字）A ← 叠句一
+While au-tumn leaves are scat-tered round（英文10音节）b
+回忆如潮不可挡（中文7字）A ← 叠句二
+
+第2节：
+岁月无声自流淌（中文7字）a
+While au-tumn leaves are scat-tered round（英文10音节）b
+月光洒满旧城墙（叠句一）
+
+第3节：
+Each step I take e-choes through the night（英文10音节）a
+While au-tumn leaves are scat-tered round（英文10音节）b
+回忆如潮不可挡（叠句二）
+
+（注：叠句使用中文以保持重复一致性，b韵行使用英文形成对照；A韵中文行互押ang韵，英文行互押ight韵）`,
     },
   }
 
@@ -378,8 +565,11 @@ Example (excerpt showing refrain repetition pattern):
     const bilingual = bilingualForms[form]
     if (language === 'zh') {
       return bilingual.zh
-    } else {
+    } else if (language === 'en') {
       return bilingual.en
+    } else {
+      // mixed language
+      return bilingual.mixed
     }
   }
 
