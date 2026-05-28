@@ -19,14 +19,29 @@ type GameState = 'idle' | 'playing' | 'paused' | 'gameover'
 
 // ─── Color Palette ────────────────────────────────────────────────
 const COLORS = {
-  bg: '#0f172a',
-  grid: '#1e293b',
-  snakeHead: '#22c55e',
+  bg: '#001f3f',          // Navy
+  grid: '#36454f',        // Charcoal
+  snakeHead: '#ffffff',
   food: '#ef4444',
   foodGlow: 'rgba(239, 68, 68, 0.3)',
-  wall: '#334155',
+  wall: '#1a1a2e',
   text: '#f8fafc',
-  overlay: 'rgba(15, 23, 42, 0.85)',
+  overlay: 'rgba(0, 31, 63, 0.85)',
+}
+
+// ─── Rainbow Colors ─────────────────────────────────────────────────
+const RAINBOW = [
+  '#ef4444', // Red
+  '#f97316', // Orange
+  '#eab308', // Yellow
+  '#22c55e', // Green
+  '#06b6d4', // Cyan
+  '#3b82f6', // Blue
+  '#8b5cf6', // Violet
+]
+
+function getRainbowColor(index: number): string {
+  return RAINBOW[index % RAINBOW.length]
 }
 
 // ─── Helper: Rounded Rectangle ────────────────────────────────────
@@ -175,7 +190,7 @@ function renderGame(
       ctx.fill()
 
       // Pupils
-      ctx.fillStyle = '#0f172a'
+      ctx.fillStyle = '#001f3f'
       ctx.beginPath()
       ctx.arc(eye1X, eye1Y, 1.5, 0, Math.PI * 2)
       ctx.fill()
@@ -183,14 +198,13 @@ function renderGame(
       ctx.arc(eye2X, eye2Y, 1.5, 0, Math.PI * 2)
       ctx.fill()
     } else {
-      // Body with gradient fade
-      const ratio = i / snake.length
-      const r = Math.round(34 + ratio * (21 - 34))
-      const g = Math.round(197 + ratio * (128 - 197))
-      const b = Math.round(94 + ratio * (61 - 94))
-      ctx.fillStyle = `rgb(${r},${g},${b})`
+      // Body with rainbow colors
+      ctx.fillStyle = getRainbowColor(i - 1)
+      ctx.shadowColor = getRainbowColor(i - 1)
+      ctx.shadowBlur = 4
       roundRect(ctx, x, y, size, size, 4)
       ctx.fill()
+      ctx.shadowBlur = 0
     }
   })
 
@@ -457,7 +471,7 @@ export default function Home() {
   }, [render])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#001f3f] via-[#001a35] to-[#001f3f] p-4 sm:p-6">
       {/* Header */}
       <header className="mb-6 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
