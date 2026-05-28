@@ -364,9 +364,11 @@ export default function Home() {
   const [collectedWords, setCollectedWords] = useState<string[]>([])
   const [poem, setPoem] = useState<string>('')
   const [isGeneratingPoem, setIsGeneratingPoem] = useState(false)
-  const [poemLanguage, setPoemLanguage] = useState<PoemLanguage>('mixed')
   const [wordLanguage, setWordLanguage] = useState<WordLanguage>('all')
   const [wordTheme, setWordTheme] = useState<WordTheme>('all')
+
+  // Auto-derive poem language from word language
+  const poemLanguage: PoemLanguage = wordLanguage === 'zh' ? 'zh' : wordLanguage === 'en' ? 'en' : 'mixed'
 
   // Sync ref with state
   useEffect(() => {
@@ -484,7 +486,8 @@ export default function Home() {
         const updated = [...prev, eatenWord]
         // Auto-generate poem when we hit the target
         if (updated.length === WORDS_TO_POEM) {
-          generatePoem(updated, poemLanguage)
+          const lang: PoemLanguage = wordLanguage === 'zh' ? 'zh' : wordLanguage === 'en' ? 'en' : 'mixed'
+          generatePoem(updated, lang)
         }
         spawnFood(updated)
         return updated
@@ -494,7 +497,7 @@ export default function Home() {
     }
 
     snakeRef.current = newSnake
-  }, [spawnFood, generatePoem, poemLanguage])
+  }, [spawnFood, generatePoem, wordLanguage])
 
   // ─── Render ───────────────────────────────────────────────────
   const render = useCallback(() => {
@@ -920,26 +923,10 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              {/* Poem language selector */}
-              <div className="flex gap-2 mb-3">
-                {([
-                  { key: 'mixed' as PoemLanguage, label: '中英混合' },
-                  { key: 'zh' as PoemLanguage, label: '纯中文' },
-                  { key: 'en' as PoemLanguage, label: '纯英文' },
-                ]).map(({ key, label }) => (
-                  <button
-                    key={key}
-                    onClick={() => setPoemLanguage(key)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                      poemLanguage === key
-                        ? 'bg-[#36454f] text-[#f5f0e1] shadow-sm'
-                        : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+              {/* Language hint */}
+              <p className="text-xs text-[#8a8575] mb-3">
+                诗歌语言自动匹配词库：{wordLanguage === 'zh' ? '纯中文' : wordLanguage === 'en' ? '纯英文' : '中英混合'}
+              </p>
 
               {/* Poem text */}
               <div className="min-h-[120px] rounded-lg bg-[#faf7ee] border border-amber-200/40 p-4">
