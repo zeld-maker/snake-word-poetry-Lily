@@ -869,7 +869,7 @@ export default function Home() {
       <CardContent className="px-4 pb-4 space-y-3">
         {/* Language filter */}
         <div>
-          <p className="text-xs text-[#8a8575] mb-1.5">语言</p>
+          <p className="text-xs text-[#8a8575] mb-1.5">语言<span className="text-[#b0a890]">（收集相对应语言的单词，创作诗歌时可以重新选择语言）</span></p>
           <div className="flex gap-2">
             {([
               { key: 'zh' as WordLanguage, label: '中文', icon: '🇨🇳' },
@@ -1078,7 +1078,7 @@ export default function Home() {
           <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-base flex items-center justify-between text-[#36454f]">
-                <span>📦 词匣子</span>
+                <span>📦 词匣子<span className="text-[10px] font-normal text-[#b0a890]">（单击单词可删除）</span></span>
                 <span className="text-sm font-normal text-[#8a8575]">
                   {wordProgress}/{WORDS_TO_POEM}
                 </span>
