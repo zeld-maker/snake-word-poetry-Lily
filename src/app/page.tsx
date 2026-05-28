@@ -9,9 +9,9 @@ import { Badge } from '@/components/ui/badge'
 const GRID_SIZE = 20
 const CELL_SIZE = 24
 const CANVAS_SIZE = GRID_SIZE * CELL_SIZE
-const INITIAL_SPEED = 150
+const INITIAL_SPEED = 120
 const SPEED_INCREMENT = 2
-const MIN_SPEED = 60
+const MIN_SPEED = 50
 const WORDS_TO_POEM = 8
 
 type Position = { x: number; y: number }
@@ -19,7 +19,7 @@ type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'
 type GameState = 'idle' | 'playing' | 'paused' | 'gameover'
 type PoemLanguage = 'mixed' | 'zh' | 'en'
 type WordLanguage = 'all' | 'zh' | 'en'
-type WordTheme = 'all' | 'nature' | 'season' | 'mood' | 'cosmos' | 'journey' | 'myth' | 'time' | 'teawine' | 'deepsea' | 'music' | 'city' | 'wuxia'
+type WordTheme = 'all' | 'nature' | 'season' | 'mood' | 'cosmos' | 'journey' | 'myth' | 'time' | 'teawine' | 'deepsea' | 'music' | 'city' | 'wuxia' | 'film'
 
 // ─── Themed Word Pools ────────────────────────────────────────────
 const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]; en: string[] }> = {
@@ -223,6 +223,22 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
       'dojo', 'sensei', 'ronin', 'shogun', 'samurai', 'warrior',
     ],
   },
+  film: {
+    label: '影视',
+    icon: '🎞️',
+    zh: [
+      '银幕', '长镜头', '蒙太奇', '画外音', '定格', '闪回', '旁白', '杀青',
+      '胶片', '对白', '特写', '远景', '滤镜', '场记', '剧本', '字幕',
+      '剪辑', '首映', '票房', '试镜', '配音', '上映', '续集', '彩蛋',
+    ],
+    en: [
+      'silver', 'montage', 'flashback', 'voiceover', 'cameo', 'blockbuster',
+      'cinematography', 'soundtrack', 'premiere', 'sequel', 'director',
+      'screenplay', 'closeup', 'voiceover', 'spotlight', 'encore',
+      'dailies', 'credits', 'trailer', 'framing', 'genre', 'screenplay',
+      'fadeout', 'outtake',
+    ],
+  },
 }
 
 // ─── Get Random Word from active theme + language ─────────────────
@@ -307,6 +323,35 @@ function drawOverlay(
   ctx.fillText(subtitle, CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 20)
 }
 
+// ─── Helper: Draw snake body segment with glass effect ───────────
+function drawSnakeSegment(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, size: number,
+  fillColor: string, radius: number
+) {
+  // Main fill
+  ctx.fillStyle = fillColor
+  ctx.shadowColor = fillColor
+  ctx.shadowBlur = 6
+  roundRect(ctx, x, y, size, size, radius)
+  ctx.fill()
+  ctx.shadowBlur = 0
+
+  // Glass border — light translucent stroke
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)'
+  ctx.lineWidth = 1.2
+  roundRect(ctx, x, y, size, size, radius)
+  ctx.stroke()
+
+  // Inner highlight — top-left gloss
+  ctx.save()
+  ctx.globalAlpha = 0.18
+  ctx.fillStyle = '#ffffff'
+  roundRect(ctx, x + 2, y + 2, size - 4, size * 0.4, radius - 1)
+  ctx.fill()
+  ctx.restore()
+}
+
 // ─── Helper: Render Game ──────────────────────────────────────────
 function renderGame(
   ctx: CanvasRenderingContext2D,
@@ -374,19 +419,20 @@ function renderGame(
   ctx.restore()
 
   // Snake
+  const segPad = 2
+  const segSize = CELL_SIZE - segPad * 2
+  const bodyRadius = segSize * 0.4 // much rounder
+  const headRadius = segSize * 0.45
+
   snake.forEach((seg, i) => {
-    const x = seg.x * CELL_SIZE + 1
-    const y = seg.y * CELL_SIZE + 1
-    const size = CELL_SIZE - 2
+    const x = seg.x * CELL_SIZE + segPad
+    const y = seg.y * CELL_SIZE + segPad
 
     if (i === 0) {
-      ctx.fillStyle = COLORS.snakeHead
-      ctx.shadowColor = COLORS.snakeHead
-      ctx.shadowBlur = 8
-      roundRect(ctx, x, y, size, size, 6)
-      ctx.fill()
-      ctx.shadowBlur = 0
+      // Head — dark with glass effect
+      drawSnakeSegment(ctx, x, y, segSize, COLORS.snakeHead, headRadius)
 
+      // Eyes
       const eyeSize = 3
       ctx.fillStyle = '#fff'
       let eye1X = 0, eye1Y = 0, eye2X = 0, eye2Y = 0
@@ -422,12 +468,8 @@ function renderGame(
       ctx.arc(eye2X, eye2Y, 1.5, 0, Math.PI * 2)
       ctx.fill()
     } else {
-      ctx.fillStyle = getRainbowColor(i - 1)
-      ctx.shadowColor = getRainbowColor(i - 1)
-      ctx.shadowBlur = 4
-      roundRect(ctx, x, y, size, size, 4)
-      ctx.fill()
-      ctx.shadowBlur = 0
+      // Body — rainbow with glass effect
+      drawSnakeSegment(ctx, x, y, segSize, getRainbowColor(i - 1), bodyRadius)
     }
   })
 
@@ -938,19 +980,27 @@ export default function Home() {
             )}
           </div>
 
-          {/* Mobile D-Pad */}
+          {/* Mobile D-Pad with glass effect */}
           <div className="mt-4 lg:hidden">
-            <div className="grid grid-cols-3 gap-2 w-40">
+            <div className="grid grid-cols-3 gap-2.5 w-52">
               <div />
-              <Button variant="outline" size="icon" className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
-                onTouchStart={() => { if (directionRef.current !== 'DOWN') nextDirectionRef.current = 'UP' }}>↑</Button>
+              <button
+                onTouchStart={() => { if (directionRef.current !== 'DOWN') nextDirectionRef.current = 'UP' }}
+                className="h-14 w-full rounded-xl border border-white/35 bg-amber-50/70 backdrop-blur-sm text-[#36454f] text-xl font-bold shadow-sm transition-all active:scale-90 active:bg-amber-200/60 active:shadow-inner select-none"
+              >↑</button>
               <div />
-              <Button variant="outline" size="icon" className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
-                onTouchStart={() => { if (directionRef.current !== 'RIGHT') nextDirectionRef.current = 'LEFT' }}>←</Button>
-              <Button variant="outline" size="icon" className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
-                onTouchStart={() => { if (directionRef.current !== 'UP') nextDirectionRef.current = 'DOWN' }}>↓</Button>
-              <Button variant="outline" size="icon" className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
-                onTouchStart={() => { if (directionRef.current !== 'LEFT') nextDirectionRef.current = 'RIGHT' }}>→</Button>
+              <button
+                onTouchStart={() => { if (directionRef.current !== 'RIGHT') nextDirectionRef.current = 'LEFT' }}
+                className="h-14 w-full rounded-xl border border-white/35 bg-amber-50/70 backdrop-blur-sm text-[#36454f] text-xl font-bold shadow-sm transition-all active:scale-90 active:bg-amber-200/60 active:shadow-inner select-none"
+              >←</button>
+              <button
+                onTouchStart={() => { if (directionRef.current !== 'UP') nextDirectionRef.current = 'DOWN' }}
+                className="h-14 w-full rounded-xl border border-white/35 bg-amber-50/70 backdrop-blur-sm text-[#36454f] text-xl font-bold shadow-sm transition-all active:scale-90 active:bg-amber-200/60 active:shadow-inner select-none"
+              >↓</button>
+              <button
+                onTouchStart={() => { if (directionRef.current !== 'LEFT') nextDirectionRef.current = 'RIGHT' }}
+                className="h-14 w-full rounded-xl border border-white/35 bg-amber-50/70 backdrop-blur-sm text-[#36454f] text-xl font-bold shadow-sm transition-all active:scale-90 active:bg-amber-200/60 active:shadow-inner select-none"
+              >→</button>
             </div>
           </div>
         </div>
