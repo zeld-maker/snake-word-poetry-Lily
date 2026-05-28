@@ -18,25 +18,127 @@ type Position = { x: number; y: number }
 type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'
 type GameState = 'idle' | 'playing' | 'paused' | 'gameover'
 type PoemLanguage = 'mixed' | 'zh' | 'en'
+type WordLanguage = 'all' | 'zh' | 'en'
+type WordTheme = 'all' | 'nature' | 'season' | 'mood' | 'cosmos' | 'journey'
 
-// ─── Word Pool ────────────────────────────────────────────────────
-const WORD_POOL = [
-  // English - nature & emotion
-  'moon', 'dream', 'river', 'fire', 'wind', 'star', 'rain', 'cloud',
-  'forest', 'light', 'shadow', 'ocean', 'dawn', 'night', 'sky', 'snow',
-  'thunder', 'heart', 'whisper', 'echo', 'bloom', 'silence', 'wander', 'flame',
-  'horizon', 'crystal', 'velvet', 'ember', 'serenity', 'aurora',
-  // Chinese - poetic imagery
-  '月光', '梦境', '星河', '清风', '流水', '落花', '晨曦', '暮色',
-  '烟雨', '山川', '浮云', '归途', '霜雪', '明月', '桃花', '春风',
-  '红尘', '天涯', '碧波', '寒霜', '幽兰', '晚霞', '长夜', '孤舟',
-  '云海', '竹影', '秋水', '烛光', '远山', '余晖',
-]
+// ─── Themed Word Pools ────────────────────────────────────────────
+const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]; en: string[] }> = {
+  all: {
+    label: '全部',
+    icon: '🌈',
+    zh: [
+      '月光', '梦境', '星河', '清风', '流水', '落花', '晨曦', '暮色',
+      '烟雨', '山川', '浮云', '归途', '霜雪', '明月', '桃花', '春风',
+      '红尘', '天涯', '碧波', '寒霜', '幽兰', '晚霞', '长夜', '孤舟',
+      '云海', '竹影', '秋水', '烛光', '远山', '余晖',
+      '雷鸣', '心语', '回声', '花语', '寂静', '漫步', '烈焰', '地平线',
+      '水晶', '丝绒', '余烬', '宁静', '极光', '银河', '苍穹', '海潮',
+      '浪花', '沙漠', '绿洲', '彩虹', '风暴', '彼岸', '迷雾', '幻梦',
+    ],
+    en: [
+      'moon', 'dream', 'river', 'fire', 'wind', 'star', 'rain', 'cloud',
+      'forest', 'light', 'shadow', 'ocean', 'dawn', 'night', 'sky', 'snow',
+      'thunder', 'heart', 'whisper', 'echo', 'bloom', 'silence', 'wander', 'flame',
+      'horizon', 'crystal', 'velvet', 'ember', 'serenity', 'aurora',
+      'galaxy', 'mirage', 'blossom', 'solitude', 'eternal', 'drifting',
+      'tempest', 'oasis', 'mirage', 'rainbow', 'tide', 'dew', 'frost', 'haze',
+    ],
+  },
+  nature: {
+    label: '自然',
+    icon: '🌿',
+    zh: [
+      '月光', '清风', '流水', '落花', '晨曦', '烟雨', '山川', '浮云',
+      '霜雪', '桃花', '碧波', '幽兰', '晚霞', '云海', '竹影', '秋水',
+      '远山', '雷鸣', '花语', '银河', '海潮', '浪花', '彩虹', '风暴',
+    ],
+    en: [
+      'moon', 'river', 'wind', 'rain', 'forest', 'ocean', 'dawn', 'snow',
+      'blossom', 'meadow', 'aurora', 'glacier', 'tide', 'canyon', 'breeze',
+      'meadow', 'coral', 'petal', 'grove', 'cascade', 'dew', 'frost', 'storm',
+    ],
+  },
+  season: {
+    label: '四季',
+    icon: '🌸',
+    zh: [
+      '春风', '桃花', '晨曦', '落花', '夏蝉', '碧波', '烟雨', '流萤',
+      '秋水', '霜降', '晚霞', '枫叶', '冬雪', '寒霜', '长夜', '暖阳',
+      '梅香', '谷雨', '白露', '小雪', '惊蛰', '芒种', '大寒', '立秋',
+    ],
+    en: [
+      'spring', 'blossom', 'sunlight', 'petal', 'summer', 'firefly', 'breeze',
+      'harvest', 'autumn', 'maple', 'twilight', 'fog', 'winter', 'frost',
+      'blizzard', 'ember', 'equinox', 'solstice', 'hibernal', 'vernal',
+      'golden', 'crimson', 'amber', 'snowfall',
+    ],
+  },
+  mood: {
+    label: '心绪',
+    icon: '💫',
+    zh: [
+      '梦境', '心语', '寂静', '回声', '孤独', '思念', '忧愁', '欢喜',
+      '迷惘', '释然', '眷恋', '怅惘', '温柔', '惆怅', '悸动', '安宁',
+      '寂寥', '希冀', '幽思', '归心', '踯躅', '缱绻', '淡然', '执念',
+    ],
+    en: [
+      'dream', 'whisper', 'silence', 'echo', 'solitude', 'longing', 'melancholy',
+      'serenity', 'wander', 'tender', 'euphoria', 'nostalgia', 'reverie',
+      'despair', 'bliss', 'sorrow', 'grace', 'solace', 'yearning', 'wistful',
+      'tranquil', 'resilient', 'fervent', 'luminous',
+    ],
+  },
+  cosmos: {
+    label: '宇宙',
+    icon: '🌌',
+    zh: [
+      '星河', '银河', '苍穹', '极光', '流星', '星云', '黑洞', '光年',
+      '星尘', '引力', '轨道', '超新星', '脉冲', '暗物质', '量子', '维度',
+      '时空', '奇点', '虫洞', '天体', '彗星', '星座', '星图', '深渊',
+    ],
+    en: [
+      'galaxy', 'nebula', 'cosmos', 'aurora', 'stellar', 'pulsar', 'quantum',
+      'eclipse', 'infinity', 'orbit', 'supernova', 'void', 'celestial',
+      'meteor', 'photon', 'dimension', 'singularity', 'wormhole', 'zenith',
+      'horizon', 'spectrum', 'cosmic', 'spacetime', 'astral',
+    ],
+  },
+  journey: {
+    label: '旅途',
+    icon: '🗺️',
+    zh: [
+      '归途', '天涯', '孤舟', '远山', '彼岸', '驿站', '行囊', '渡口',
+      '岔路', '沿途', '远方', '足迹', '路标', '黄昏', '破晓', '启程',
+      '流浪', '寻觅', '跨越', '漫游', '等待', '相遇', '告别', '重逢',
+    ],
+    en: [
+      'horizon', 'wander', 'voyage', 'compass', 'trail', 'crossroad', 'haven',
+      'odyssey', 'passage', 'drifting', 'wayfarer', 'sojourn', 'pilgrim',
+      'departure', 'arrival', 'wilderness', 'frontier', 'expedition',
+      'beacon', 'anchor', 'navigate', 'roaming', 'quest', 'milestone',
+    ],
+  },
+}
 
-function getRandomWord(exclude: string[]): string {
-  const available = WORD_POOL.filter(w => !exclude.includes(w))
-  const pool = available.length > 0 ? available : WORD_POOL
-  return pool[Math.floor(Math.random() * pool.length)]
+// ─── Get Random Word from active theme + language ─────────────────
+function getRandomWord(
+  theme: WordTheme,
+  lang: WordLanguage,
+  exclude: string[]
+): string {
+  const pool = WORD_THEMES[theme]
+  let words: string[] = []
+  if (lang === 'zh') {
+    words = pool.zh
+  } else if (lang === 'en') {
+    words = pool.en
+  } else {
+    words = [...pool.zh, ...pool.en]
+  }
+
+  const available = words.filter(w => !exclude.includes(w))
+  const finalPool = available.length > 0 ? available : words
+  return finalPool[Math.floor(Math.random() * finalPool.length)]
 }
 
 // ─── Color Palette ────────────────────────────────────────────────
@@ -138,7 +240,6 @@ function renderGame(
   const foodCenterY = food.y * CELL_SIZE + CELL_SIZE / 2
   const pulseScale = 1 + Math.sin(foodAnimation) * 0.08
 
-  // Word background pill
   ctx.save()
   const fontSize = foodWord.length > 3 ? 11 : 13
   ctx.font = `bold ${fontSize}px "Geist", "PingFang SC", "Microsoft YaHei", sans-serif`
@@ -149,7 +250,6 @@ function renderGame(
   const pillX = foodCenterX - pillW / 2
   const pillY = foodCenterY - pillH / 2
 
-  // Glow
   ctx.shadowColor = 'rgba(239, 68, 68, 0.4)'
   ctx.shadowBlur = 12 * pulseScale
   ctx.fillStyle = COLORS.wordBg
@@ -157,13 +257,11 @@ function renderGame(
   ctx.fill()
   ctx.shadowBlur = 0
 
-  // Border
   ctx.strokeStyle = COLORS.wordBorder
   ctx.lineWidth = 1.5
   roundRect(ctx, pillX, pillY, pillW, pillH, pillH / 2)
   ctx.stroke()
 
-  // Word text
   ctx.fillStyle = COLORS.wordText
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
@@ -177,7 +275,6 @@ function renderGame(
     const size = CELL_SIZE - 2
 
     if (i === 0) {
-      // Head
       ctx.fillStyle = COLORS.snakeHead
       ctx.shadowColor = COLORS.snakeHead
       ctx.shadowBlur = 8
@@ -185,7 +282,6 @@ function renderGame(
       ctx.fill()
       ctx.shadowBlur = 0
 
-      // Eyes
       const eyeSize = 3
       ctx.fillStyle = '#fff'
       let eye1X = 0, eye1Y = 0, eye2X = 0, eye2Y = 0
@@ -213,7 +309,6 @@ function renderGame(
       ctx.arc(eye2X, eye2Y, eyeSize, 0, Math.PI * 2)
       ctx.fill()
 
-      // Pupils
       ctx.fillStyle = '#f5f0e1'
       ctx.beginPath()
       ctx.arc(eye1X, eye1Y, 1.5, 0, Math.PI * 2)
@@ -222,7 +317,6 @@ function renderGame(
       ctx.arc(eye2X, eye2Y, 1.5, 0, Math.PI * 2)
       ctx.fill()
     } else {
-      // Body with rainbow colors
       ctx.fillStyle = getRainbowColor(i - 1)
       ctx.shadowColor = getRainbowColor(i - 1)
       ctx.shadowBlur = 4
@@ -239,7 +333,7 @@ function renderGame(
 
   // Overlays
   if (gameState === 'idle') {
-    drawOverlay(ctx, '🐍 贪吃蛇', '吃掉单词，收集灵感，创作诗歌')
+    drawOverlay(ctx, '🐍 诗意贪吃蛇', '吃掉单词，收集灵感，创作诗歌')
   } else if (gameState === 'paused') {
     drawOverlay(ctx, '⏸ 暂停', '按 空格键 继续')
   } else if (gameState === 'gameover') {
@@ -271,6 +365,8 @@ export default function Home() {
   const [poem, setPoem] = useState<string>('')
   const [isGeneratingPoem, setIsGeneratingPoem] = useState(false)
   const [poemLanguage, setPoemLanguage] = useState<PoemLanguage>('mixed')
+  const [wordLanguage, setWordLanguage] = useState<WordLanguage>('all')
+  const [wordTheme, setWordTheme] = useState<WordTheme>('all')
 
   // Sync ref with state
   useEffect(() => {
@@ -287,8 +383,8 @@ export default function Home() {
       }
     } while (snakeRef.current.some(seg => seg.x === newFood.x && seg.y === newFood.y))
     foodRef.current = newFood
-    foodWordRef.current = getRandomWord(collected)
-  }, [])
+    foodWordRef.current = getRandomWord(wordTheme, wordLanguage, collected)
+  }, [wordTheme, wordLanguage])
 
   // ─── Initialize Game ──────────────────────────────────────────
   const initGame = useCallback(() => {
@@ -328,6 +424,17 @@ export default function Home() {
       setIsGeneratingPoem(false)
     }
   }, [])
+
+  // ─── Delete Single Word ───────────────────────────────────────
+  const deleteWord = useCallback((index: number) => {
+    setCollectedWords(prev => {
+      const updated = prev.filter((_, i) => i !== index)
+      // If we had a poem and dropped below threshold, keep the poem
+      // but update the food to avoid already-collected words
+      spawnFood(updated)
+      return updated
+    })
+  }, [spawnFood])
 
   // ─── Game Step ────────────────────────────────────────────────
   const gameStep = useCallback(() => {
@@ -379,7 +486,6 @@ export default function Home() {
         if (updated.length === WORDS_TO_POEM) {
           generatePoem(updated, poemLanguage)
         }
-        // Spawn new food with updated word list
         spawnFood(updated)
         return updated
       })
@@ -530,7 +636,7 @@ export default function Home() {
       }
     } while (snakeRef.current.some(seg => seg.x === newFood.x && seg.y === newFood.y))
     foodRef.current = newFood
-    foodWordRef.current = getRandomWord([])
+    foodWordRef.current = getRandomWord('all', 'all', [])
 
     render()
   }, [render])
@@ -548,6 +654,13 @@ export default function Home() {
     }
   }, [collectedWords, generatePoem, poemLanguage])
 
+  // ─── Re-spawn food when theme/language changes ───────────────
+  useEffect(() => {
+    if (gameState === 'playing' || gameState === 'paused') {
+      foodWordRef.current = getRandomWord(wordTheme, wordLanguage, collectedWords)
+    }
+  }, [wordTheme, wordLanguage, collectedWords, gameState])
+
   const wordProgress = Math.min(collectedWords.length, WORDS_TO_POEM)
 
   return (
@@ -562,7 +675,7 @@ export default function Home() {
         </p>
       </header>
 
-      {/* Main Layout: Game + Collection Panel */}
+      {/* Main Layout */}
       <div className="flex flex-col lg:flex-row gap-6 items-start justify-center w-full max-w-5xl mx-auto">
         {/* Left: Game Area */}
         <div className="flex flex-col items-center">
@@ -660,54 +773,76 @@ export default function Home() {
           <div className="mt-4 lg:hidden">
             <div className="grid grid-cols-3 gap-2 w-40">
               <div />
-              <Button
-                variant="outline"
-                size="icon"
-                className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
-                onTouchStart={() => {
-                  if (directionRef.current !== 'DOWN') nextDirectionRef.current = 'UP'
-                }}
-              >
-                ↑
-              </Button>
+              <Button variant="outline" size="icon" className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
+                onTouchStart={() => { if (directionRef.current !== 'DOWN') nextDirectionRef.current = 'UP' }}>↑</Button>
               <div />
-              <Button
-                variant="outline"
-                size="icon"
-                className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
-                onTouchStart={() => {
-                  if (directionRef.current !== 'RIGHT') nextDirectionRef.current = 'LEFT'
-                }}
-              >
-                ←
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
-                onTouchStart={() => {
-                  if (directionRef.current !== 'UP') nextDirectionRef.current = 'DOWN'
-                }}
-              >
-                ↓
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
-                onTouchStart={() => {
-                  if (directionRef.current !== 'LEFT') nextDirectionRef.current = 'RIGHT'
-                }}
-              >
-                →
-              </Button>
+              <Button variant="outline" size="icon" className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
+                onTouchStart={() => { if (directionRef.current !== 'RIGHT') nextDirectionRef.current = 'LEFT' }}>←</Button>
+              <Button variant="outline" size="icon" className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
+                onTouchStart={() => { if (directionRef.current !== 'UP') nextDirectionRef.current = 'DOWN' }}>↓</Button>
+              <Button variant="outline" size="icon" className="border-[#36454f]/60 text-[#36454f] h-12 w-full"
+                onTouchStart={() => { if (directionRef.current !== 'LEFT') nextDirectionRef.current = 'RIGHT' }}>→</Button>
             </div>
           </div>
         </div>
 
-        {/* Right: Word Collection & Poem Panel */}
+        {/* Right: Panel */}
         <div className="w-full lg:w-80 flex flex-col gap-4">
-          {/* Word Collection Box */}
+          {/* ─── Theme Selector ──────────────────────────────── */}
+          <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
+            <CardHeader className="pb-2 pt-4 px-4">
+              <CardTitle className="text-base text-[#36454f]">
+                🎨 词库主题
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4 space-y-3">
+              {/* Language filter */}
+              <div>
+                <p className="text-xs text-[#8a8575] mb-1.5">语言</p>
+                <div className="flex gap-2">
+                  {([
+                    { key: 'all' as WordLanguage, label: '中英混合', icon: '🌏' },
+                    { key: 'zh' as WordLanguage, label: '中文', icon: '🇨🇳' },
+                    { key: 'en' as WordLanguage, label: 'English', icon: '🇬🇧' },
+                  ]).map(({ key, label, icon }) => (
+                    <button
+                      key={key}
+                      onClick={() => setWordLanguage(key)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                        wordLanguage === key
+                          ? 'bg-[#36454f] text-[#f5f0e1] shadow-sm'
+                          : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
+                      }`}
+                    >
+                      {icon} {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Theme filter */}
+              <div>
+                <p className="text-xs text-[#8a8575] mb-1.5">主题</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(Object.entries(WORD_THEMES) as [WordTheme, typeof WORD_THEMES[WordTheme]][]).map(([key, { label, icon }]) => (
+                    <button
+                      key={key}
+                      onClick={() => setWordTheme(key)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                        wordTheme === key
+                          ? 'bg-[#36454f] text-[#f5f0e1] shadow-sm'
+                          : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
+                      }`}
+                    >
+                      {icon} {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* ─── Word Collection Box ─────────────────────────── */}
           <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-base flex items-center justify-between text-[#36454f]">
@@ -730,7 +865,7 @@ export default function Home() {
                   }}
                 />
               </div>
-              {/* Word tags */}
+              {/* Word tags with delete */}
               <div className="flex flex-wrap gap-2 min-h-[48px]">
                 {collectedWords.length === 0 ? (
                   <p className="text-[#b0a890] text-sm italic">吃掉单词来收集...</p>
@@ -738,7 +873,7 @@ export default function Home() {
                   collectedWords.map((word, i) => (
                     <span
                       key={`${word}-${i}`}
-                      className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium border"
+                      className="group inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium border cursor-default transition-all hover:shadow-sm"
                       style={{
                         backgroundColor: `${getRainbowColor(i)}15`,
                         color: getRainbowColor(i),
@@ -746,6 +881,14 @@ export default function Home() {
                       }}
                     >
                       {word}
+                      <button
+                        onClick={() => deleteWord(i)}
+                        className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full text-[8px] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 hover:text-white"
+                        style={{ color: getRainbowColor(i) }}
+                        aria-label={`删除 ${word}`}
+                      >
+                        ✕
+                      </button>
                     </span>
                   ))
                 )}
@@ -764,7 +907,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          {/* Poem Display */}
+          {/* ─── Poem Display ────────────────────────────────── */}
           <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-base flex items-center gap-2 text-[#36454f]">
@@ -777,13 +920,13 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              {/* Language selector */}
+              {/* Poem language selector */}
               <div className="flex gap-2 mb-3">
                 {([
-                  { key: 'mixed', label: '中英混合' },
-                  { key: 'zh', label: '纯中文' },
-                  { key: 'en', label: '纯英文' },
-                ] as const).map(({ key, label }) => (
+                  { key: 'mixed' as PoemLanguage, label: '中英混合' },
+                  { key: 'zh' as PoemLanguage, label: '纯中文' },
+                  { key: 'en' as PoemLanguage, label: '纯英文' },
+                ]).map(({ key, label }) => (
                   <button
                     key={key}
                     onClick={() => setPoemLanguage(key)}
