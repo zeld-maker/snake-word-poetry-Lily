@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
 // ─── Game Constants ───────────────────────────────────────────────
-const GRID_SIZE = 20
-const CELL_SIZE = 24
+const GRID_SIZE = 16
+const CELL_SIZE = 30
 const CANVAS_SIZE = GRID_SIZE * CELL_SIZE
 const INITIAL_SPEED = 120
 const SPEED_INCREMENT = 2
@@ -18,32 +18,21 @@ type Position = { x: number; y: number }
 type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'
 type GameState = 'idle' | 'playing' | 'paused' | 'gameover'
 type PoemLanguage = 'mixed' | 'zh' | 'en'
+type PoemForm = 'auto' | 'classical' | 'modern' | 'sonnet' | 'haiku'
 type WordLanguage = 'all' | 'zh' | 'en'
-type WordTheme = 'all' | 'nature' | 'season' | 'mood' | 'cosmos' | 'journey' | 'myth' | 'time' | 'teawine' | 'deepsea' | 'music' | 'city' | 'wuxia' | 'film'
+type WordTheme = 'nature' | 'season' | 'mood' | 'cosmos' | 'journey' | 'myth' | 'time' | 'teawine' | 'deepsea' | 'music' | 'city' | 'wuxia' | 'film'
+
+// ─── Poem Form Options ────────────────────────────────────────────
+const POEM_FORMS: Record<PoemForm, { label: string; icon: string; desc: string }> = {
+  auto: { label: '自动', icon: '✨', desc: '由 AI 选择最合适的体裁' },
+  classical: { label: '古体诗', icon: '📜', desc: '五言/七言绝句、律诗' },
+  modern: { label: '现代诗', icon: '🖋️', desc: '自由体诗歌' },
+  sonnet: { label: 'Sonnet', icon: '🎭', desc: '莎士比亚十四行诗' },
+  haiku: { label: 'Haiku', icon: '🎋', desc: '俳句 5-7-5 音节' },
+}
 
 // ─── Themed Word Pools ────────────────────────────────────────────
 const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]; en: string[] }> = {
-  all: {
-    label: '全部',
-    icon: '🌈',
-    zh: [
-      '月光', '梦境', '星河', '清风', '流水', '落花', '晨曦', '暮色',
-      '烟雨', '山川', '浮云', '归途', '霜雪', '明月', '桃花', '春风',
-      '红尘', '天涯', '碧波', '寒霜', '幽兰', '晚霞', '长夜', '孤舟',
-      '云海', '竹影', '秋水', '烛光', '远山', '余晖',
-      '雷鸣', '心语', '回声', '花语', '寂静', '漫步', '烈焰', '地平线',
-      '水晶', '丝绒', '余烬', '宁静', '极光', '银河', '苍穹', '海潮',
-      '浪花', '沙漠', '绿洲', '彩虹', '风暴', '彼岸', '迷雾', '幻梦',
-    ],
-    en: [
-      'moon', 'dream', 'river', 'fire', 'wind', 'star', 'rain', 'cloud',
-      'forest', 'light', 'shadow', 'ocean', 'dawn', 'night', 'sky', 'snow',
-      'thunder', 'heart', 'whisper', 'echo', 'bloom', 'silence', 'wander', 'flame',
-      'horizon', 'crystal', 'velvet', 'ember', 'serenity', 'aurora',
-      'galaxy', 'mirage', 'blossom', 'solitude', 'eternal', 'drifting',
-      'tempest', 'oasis', 'mirage', 'rainbow', 'tide', 'dew', 'frost', 'haze',
-    ],
-  },
   nature: {
     label: '自然',
     icon: '🌿',
@@ -138,7 +127,7 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
     icon: '⏳',
     zh: [
       '瞬间', '永恒', '回忆', '轮回', '琥珀', '流年', '韶华', '迟暮',
-      '岁月', '刹那', '光阴', '往昔', '晨昏', '须臾', '沧桑', '永恒',
+      '岁月', '刹那', '光阴', '往昔', '晨昏', '须臾', '沧桑', '余晖',
       '时光', '暮年', '追忆', '流沙', '年华', '今夕', '昔年', '余温',
     ],
     en: [
@@ -160,7 +149,7 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
       'brew', 'vintage', 'amber', 'toast', 'cellar', 'distill', 'ferment',
       'sip', 'pour', 'vessel', 'nectar', 'intoxicate', 'sober', 'decanter',
       'barrel', 'infusion', 'ceremony', 'steep', 'aroma', 'bouquet',
-      'vintage', 'goblet', 'chalice', 'elixir',
+      'goblet', 'chalice', 'elixir', 'spirit',
     ],
   },
   deepsea: {
@@ -169,7 +158,7 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
     zh: [
       '暗流', '珊瑚', '鲸歌', '深渊', '海沟', '潮汐', '沉船', '海藻',
       '灯塔', '暗礁', '海底', '碧蓝', '浮游', '漩涡', '寒流', '海月',
-      '深渊', '海螺', '水母', '海沟', '龙宫', '潮涌', '海风', '蓝洞',
+      '深渊', '海螺', '水母', '龙宫', '潮涌', '海风', '蓝洞', '幽蓝',
     ],
     en: [
       'abyss', 'coral', 'whale', 'depth', 'current', 'trench', 'shipwreck',
@@ -241,21 +230,26 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
   },
 }
 
-// ─── Get Random Word from active theme + language ─────────────────
+// ─── Get Random Word from multiple themes + language ──────────────
 function getRandomWord(
-  theme: WordTheme,
+  themes: WordTheme[],
   lang: WordLanguage,
   exclude: string[]
 ): string {
-  const pool = WORD_THEMES[theme]
   let words: string[] = []
-  if (lang === 'zh') {
-    words = pool.zh
-  } else if (lang === 'en') {
-    words = pool.en
-  } else {
-    words = [...pool.zh, ...pool.en]
+  for (const theme of themes) {
+    const pool = WORD_THEMES[theme]
+    if (lang === 'zh') {
+      words = words.concat(pool.zh)
+    } else if (lang === 'en') {
+      words = words.concat(pool.en)
+    } else {
+      words = words.concat(pool.zh, pool.en)
+    }
   }
+
+  // Deduplicate
+  words = [...new Set(words)]
 
   const available = words.filter(w => !exclude.includes(w))
   const finalPool = available.length > 0 ? available : words
@@ -315,12 +309,12 @@ function drawOverlay(
   ctx.fillStyle = COLORS.text
   ctx.textAlign = 'center'
 
-  ctx.font = 'bold 32px "Geist", sans-serif'
-  ctx.fillText(title, CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 20)
+  ctx.font = 'bold 36px "Geist", sans-serif'
+  ctx.fillText(title, CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 24)
 
-  ctx.font = '16px "Geist", sans-serif'
+  ctx.font = '18px "Geist", sans-serif'
   ctx.fillStyle = '#8a8575'
-  ctx.fillText(subtitle, CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 20)
+  ctx.fillText(subtitle, CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 24)
 }
 
 // ─── Helper: Draw snake body segment with glass effect ───────────
@@ -391,12 +385,12 @@ function renderGame(
   const pulseScale = 1 + Math.sin(foodAnimation) * 0.08
 
   ctx.save()
-  const fontSize = foodWord.length > 3 ? 11 : 13
+  const fontSize = foodWord.length > 3 ? 12 : 14
   ctx.font = `bold ${fontSize}px "Geist", "PingFang SC", "Microsoft YaHei", sans-serif`
   const textMetrics = ctx.measureText(foodWord)
   const textWidth = textMetrics.width
-  const pillW = (textWidth + 14) * pulseScale
-  const pillH = (fontSize + 10) * pulseScale
+  const pillW = (textWidth + 16) * pulseScale
+  const pillH = (fontSize + 12) * pulseScale
   const pillX = foodCenterX - pillW / 2
   const pillY = foodCenterY - pillH / 2
 
@@ -421,7 +415,7 @@ function renderGame(
   // Snake
   const segPad = 2
   const segSize = CELL_SIZE - segPad * 2
-  const bodyRadius = segSize * 0.4 // much rounder
+  const bodyRadius = segSize * 0.4
   const headRadius = segSize * 0.45
 
   snake.forEach((seg, i) => {
@@ -433,7 +427,8 @@ function renderGame(
       drawSnakeSegment(ctx, x, y, segSize, COLORS.snakeHead, headRadius)
 
       // Eyes
-      const eyeSize = 3
+      const eyeSize = 3.5
+      const eyeOffset = 5
       ctx.fillStyle = '#fff'
       let eye1X = 0, eye1Y = 0, eye2X = 0, eye2Y = 0
       const cx = seg.x * CELL_SIZE + CELL_SIZE / 2
@@ -441,16 +436,16 @@ function renderGame(
 
       switch (direction) {
         case 'RIGHT':
-          eye1X = cx + 4; eye1Y = cy - 4; eye2X = cx + 4; eye2Y = cy + 4
+          eye1X = cx + eyeOffset; eye1Y = cy - eyeOffset; eye2X = cx + eyeOffset; eye2Y = cy + eyeOffset
           break
         case 'LEFT':
-          eye1X = cx - 4; eye1Y = cy - 4; eye2X = cx - 4; eye2Y = cy + 4
+          eye1X = cx - eyeOffset; eye1Y = cy - eyeOffset; eye2X = cx - eyeOffset; eye2Y = cy + eyeOffset
           break
         case 'UP':
-          eye1X = cx - 4; eye1Y = cy - 4; eye2X = cx + 4; eye2Y = cy - 4
+          eye1X = cx - eyeOffset; eye1Y = cy - eyeOffset; eye2X = cx + eyeOffset; eye2Y = cy - eyeOffset
           break
         case 'DOWN':
-          eye1X = cx - 4; eye1Y = cy + 4; eye2X = cx + 4; eye2Y = cy + 4
+          eye1X = cx - eyeOffset; eye1Y = cy + eyeOffset; eye2X = cx + eyeOffset; eye2Y = cy + eyeOffset
           break
       }
       ctx.beginPath()
@@ -462,10 +457,10 @@ function renderGame(
 
       ctx.fillStyle = '#f5f0e1'
       ctx.beginPath()
-      ctx.arc(eye1X, eye1Y, 1.5, 0, Math.PI * 2)
+      ctx.arc(eye1X, eye1Y, 1.8, 0, Math.PI * 2)
       ctx.fill()
       ctx.beginPath()
-      ctx.arc(eye2X, eye2Y, 1.5, 0, Math.PI * 2)
+      ctx.arc(eye2X, eye2Y, 1.8, 0, Math.PI * 2)
       ctx.fill()
     } else {
       // Body — rainbow with glass effect
@@ -512,10 +507,30 @@ export default function Home() {
   const [poem, setPoem] = useState<string>('')
   const [isGeneratingPoem, setIsGeneratingPoem] = useState(false)
   const [wordLanguage, setWordLanguage] = useState<WordLanguage>('all')
-  const [wordTheme, setWordTheme] = useState<WordTheme>('all')
+  const [selectedThemes, setSelectedThemes] = useState<WordTheme[]>(['nature', 'season', 'mood', 'cosmos', 'journey', 'myth', 'time', 'teawine', 'deepsea', 'music', 'city', 'wuxia', 'film'])
+  const [poemForm, setPoemForm] = useState<PoemForm>('auto')
+  const [copied, setCopied] = useState(false)
 
   // Auto-derive poem language from word language
   const poemLanguage: PoemLanguage = wordLanguage === 'zh' ? 'zh' : wordLanguage === 'en' ? 'en' : 'mixed'
+
+  // Toggle theme selection
+  const toggleTheme = useCallback((theme: WordTheme) => {
+    setSelectedThemes(prev => {
+      if (prev.includes(theme)) {
+        // Don't allow deselecting all themes
+        if (prev.length <= 1) return prev
+        return prev.filter(t => t !== theme)
+      } else {
+        return [...prev, theme]
+      }
+    })
+  }, [])
+
+  // Select all themes
+  const selectAllThemes = useCallback(() => {
+    setSelectedThemes(Object.keys(WORD_THEMES) as WordTheme[])
+  }, [])
 
   // Sync ref with state
   useEffect(() => {
@@ -532,8 +547,8 @@ export default function Home() {
       }
     } while (snakeRef.current.some(seg => seg.x === newFood.x && seg.y === newFood.y))
     foodRef.current = newFood
-    foodWordRef.current = getRandomWord(wordTheme, wordLanguage, collected)
-  }, [wordTheme, wordLanguage])
+    foodWordRef.current = getRandomWord(selectedThemes, wordLanguage, collected)
+  }, [selectedThemes, wordLanguage])
 
   // ─── Initialize Game ──────────────────────────────────────────
   const initGame = useCallback(() => {
@@ -553,7 +568,7 @@ export default function Home() {
   }, [spawnFood])
 
   // ─── Generate Poem ────────────────────────────────────────────
-  const generatePoem = useCallback(async (words: string[], lang: PoemLanguage) => {
+  const generatePoem = useCallback(async (words: string[], lang: PoemLanguage, form: PoemForm) => {
     if (words.length < WORDS_TO_POEM) return
     setIsGeneratingPoem(true)
     setPoem('')
@@ -561,7 +576,7 @@ export default function Home() {
       const res = await fetch('/api/poem', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ words, language: lang }),
+        body: JSON.stringify({ words, language: lang, form }),
       })
       const data = await res.json()
       if (data.poem) {
@@ -578,8 +593,6 @@ export default function Home() {
   const deleteWord = useCallback((index: number) => {
     setCollectedWords(prev => {
       const updated = prev.filter((_, i) => i !== index)
-      // If we had a poem and dropped below threshold, keep the poem
-      // but update the food to avoid already-collected words
       spawnFood(updated)
       return updated
     })
@@ -634,7 +647,7 @@ export default function Home() {
         // Auto-generate poem when we hit the target
         if (updated.length === WORDS_TO_POEM) {
           const lang: PoemLanguage = wordLanguage === 'zh' ? 'zh' : wordLanguage === 'en' ? 'en' : 'mixed'
-          generatePoem(updated, lang)
+          generatePoem(updated, lang, poemForm)
         }
         spawnFood(updated)
         return updated
@@ -644,7 +657,7 @@ export default function Home() {
     }
 
     snakeRef.current = newSnake
-  }, [spawnFood, generatePoem, wordLanguage])
+  }, [spawnFood, generatePoem, wordLanguage, poemForm])
 
   // ─── Render ───────────────────────────────────────────────────
   const render = useCallback(() => {
@@ -786,7 +799,9 @@ export default function Home() {
       }
     } while (snakeRef.current.some(seg => seg.x === newFood.x && seg.y === newFood.y))
     foodRef.current = newFood
-    foodWordRef.current = getRandomWord('all', 'all', [])
+    foodWordRef.current = getRandomWord(
+      Object.keys(WORD_THEMES) as WordTheme[], 'all', []
+    )
 
     render()
   }, [render])
@@ -800,16 +815,36 @@ export default function Home() {
   // ─── Remix Poem ──────────────────────────────────────────────
   const remixPoem = useCallback(() => {
     if (collectedWords.length >= WORDS_TO_POEM) {
-      generatePoem(collectedWords, poemLanguage)
+      generatePoem(collectedWords, poemLanguage, poemForm)
     }
-  }, [collectedWords, generatePoem, poemLanguage])
+  }, [collectedWords, generatePoem, poemLanguage, poemForm])
 
   // ─── Re-spawn food when theme/language changes ───────────────
   useEffect(() => {
     if (gameState === 'playing' || gameState === 'paused') {
-      foodWordRef.current = getRandomWord(wordTheme, wordLanguage, collectedWords)
+      foodWordRef.current = getRandomWord(selectedThemes, wordLanguage, collectedWords)
     }
-  }, [wordTheme, wordLanguage, collectedWords, gameState])
+  }, [selectedThemes, wordLanguage, collectedWords, gameState])
+
+  // ─── Copy Poem ───────────────────────────────────────────────
+  const copyPoem = useCallback(async () => {
+    if (!poem) return
+    try {
+      await navigator.clipboard.writeText(poem)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Fallback
+      const textArea = document.createElement('textarea')
+      textArea.value = poem
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }, [poem])
 
   const wordProgress = Math.min(collectedWords.length, WORDS_TO_POEM)
 
@@ -817,8 +852,14 @@ export default function Home() {
   const renderThemeSelector = () => (
     <Card className="bg-amber-50/80 border-amber-200/60 backdrop-blur-sm">
       <CardHeader className="pb-2 pt-4 px-4">
-        <CardTitle className="text-base text-[#36454f]">
-          🎨 词库主题
+        <CardTitle className="text-base flex items-center justify-between text-[#36454f]">
+          <span>🎨 词库主题</span>
+          <button
+            onClick={selectAllThemes}
+            className="text-xs font-normal text-[#8a8575] hover:text-[#36454f] transition-colors"
+          >
+            {selectedThemes.length === Object.keys(WORD_THEMES).length ? '已全选' : '全选'}
+          </button>
         </CardTitle>
       </CardHeader>
       <CardContent className="px-4 pb-4 space-y-3">
@@ -846,16 +887,18 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Theme filter */}
+        {/* Theme filter — multi-select */}
         <div>
-          <p className="text-xs text-[#8a8575] mb-1.5">主题</p>
+          <p className="text-xs text-[#8a8575] mb-1.5">
+            主题 <span className="text-[#b0a890]">（可多选）</span>
+          </p>
           <div className="flex flex-wrap gap-1.5">
             {(Object.entries(WORD_THEMES) as [WordTheme, typeof WORD_THEMES[WordTheme]][]).map(([key, { label, icon }]) => (
               <button
                 key={key}
-                onClick={() => setWordTheme(key)}
+                onClick={() => toggleTheme(key)}
                 className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                  wordTheme === key
+                  selectedThemes.includes(key)
                     ? 'bg-[#36454f] text-[#f5f0e1] shadow-sm'
                     : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
                 }`}
@@ -882,7 +925,7 @@ export default function Home() {
       </header>
 
       {/* Mobile: Theme Selector between header and game */}
-      <div className="w-full max-w-md mx-auto lg:hidden mb-4">
+      <div className="w-full max-w-lg mx-auto lg:hidden mb-4">
         {renderThemeSelector()}
       </div>
 
@@ -925,7 +968,6 @@ export default function Home() {
               width={CANVAS_SIZE}
               height={CANVAS_SIZE}
               className="block max-w-full h-auto"
-              style={{ imageRendering: 'pixelated' }}
             />
           </div>
 
@@ -1090,17 +1132,53 @@ export default function Home() {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              {/* Language hint */}
-              <p className="text-xs text-[#8a8575] mb-3">
-                诗歌语言自动匹配词库：{wordLanguage === 'zh' ? '纯中文' : wordLanguage === 'en' ? '纯英文' : '中英混合'}
-              </p>
+              {/* Poem form selector */}
+              <div className="mb-3">
+                <p className="text-xs text-[#8a8575] mb-1.5">体裁</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(Object.entries(POEM_FORMS) as [PoemForm, typeof POEM_FORMS[PoemForm]][]).map(([key, { label, icon }]) => (
+                    <button
+                      key={key}
+                      onClick={() => setPoemForm(key)}
+                      title={POEM_FORMS[key].desc}
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium transition-all ${
+                        poemForm === key
+                          ? 'bg-violet-600 text-white shadow-sm'
+                          : 'bg-[#ede8d8] text-[#5a5545] hover:bg-[#e0dac8]'
+                      }`}
+                    >
+                      {icon} {label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-[#b0a890] mt-1">
+                  {POEM_FORMS[poemForm].desc} · 诗歌语言：{wordLanguage === 'zh' ? '纯中文' : wordLanguage === 'en' ? '纯英文' : '中英混合'}
+                </p>
+              </div>
 
               {/* Poem text */}
-              <div className="min-h-[120px] rounded-lg bg-[#faf7ee] border border-amber-200/40 p-4">
+              <div className="relative min-h-[120px] rounded-lg bg-[#faf7ee] border border-amber-200/40 p-4">
                 {poem ? (
-                  <div className="text-[#36454f] text-sm leading-relaxed whitespace-pre-wrap">
-                    {poem}
-                  </div>
+                  <>
+                    <div className="text-[#36454f] text-sm leading-relaxed whitespace-pre-wrap">
+                      {poem}
+                    </div>
+                    {/* Copy button */}
+                    <button
+                      onClick={copyPoem}
+                      className="absolute bottom-2 right-2 p-1.5 rounded-lg transition-all hover:bg-amber-100/80 active:scale-90"
+                      title="复制诗歌"
+                    >
+                      {copied ? (
+                        <span className="text-emerald-500 text-sm">✓ 已复制</span>
+                      ) : (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a8575" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                      )}
+                    </button>
+                  </>
                 ) : isGeneratingPoem ? (
                   <div className="flex items-center justify-center h-full min-h-[80px]">
                     <div className="flex gap-1.5">
