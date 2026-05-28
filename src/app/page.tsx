@@ -49,7 +49,7 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
     en: [
       'moon', 'river', 'wind', 'rain', 'forest', 'ocean', 'dawn', 'snow',
       'blossom', 'meadow', 'aurora', 'glacier', 'tide', 'canyon', 'breeze',
-      'meadow', 'coral', 'petal', 'grove', 'cascade', 'dew', 'frost', 'storm',
+      'coral', 'petal', 'grove', 'cascade', 'dew', 'frost', 'storm',
     ],
   },
   season: {
@@ -163,7 +163,7 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
     zh: [
       '暗流', '珊瑚', '鲸歌', '深渊', '海沟', '潮汐', '沉船', '海藻',
       '灯塔', '暗礁', '海底', '碧蓝', '浮游', '漩涡', '寒流', '海月',
-      '深渊', '海螺', '水母', '龙宫', '潮涌', '海风', '蓝洞', '幽蓝',
+      '海螺', '水母', '龙宫', '潮涌', '海风', '蓝洞', '幽蓝', '沉影',
     ],
     en: [
       'abyss', 'coral', 'whale', 'depth', 'current', 'trench', 'shipwreck',
@@ -228,9 +228,9 @@ const WORD_THEMES: Record<WordTheme, { label: string; icon: string; zh: string[]
     en: [
       'silver', 'montage', 'flashback', 'voiceover', 'cameo', 'blockbuster',
       'cinematography', 'soundtrack', 'premiere', 'sequel', 'director',
-      'screenplay', 'closeup', 'voiceover', 'spotlight', 'encore',
-      'dailies', 'credits', 'trailer', 'framing', 'genre', 'screenplay',
-      'fadeout', 'outtake',
+      'screenplay', 'closeup', 'spotlight', 'encore',
+      'dailies', 'credits', 'trailer', 'framing', 'genre',
+      'fadeout', 'outtake', 'bloopers',
     ],
   },
 }
@@ -268,7 +268,6 @@ const COLORS = {
   bg: '#f5f0e1',
   grid: '#36454f',
   snakeHead: '#2d2d2d',
-  food: '#ef4444',
   wall: '#36454f',
   text: '#2d2d2d',
   overlay: 'rgba(245, 240, 225, 0.85)',
@@ -363,8 +362,13 @@ function renderGame(
   gameState: GameState,
   currentScore: number,
   foodAnimation: number
-) {
+): number {
   foodAnimation += 0.05
+
+  // Persist animation progress for next frame
+  // (the ref is passed by value, so we must update it externally)
+  // We return the updated value so the caller can store it back
+  const updatedAnimation = foodAnimation
 
   // Background
   ctx.fillStyle = COLORS.bg
@@ -488,6 +492,8 @@ function renderGame(
   } else if (gameState === 'gameover') {
     drawOverlay(ctx, '💀 游戏结束', `得分: ${currentScore}`)
   }
+
+  return updatedAnimation
 }
 
 // ─── Main Component ───────────────────────────────────────────────
@@ -509,7 +515,6 @@ export default function Home() {
   const [gameState, setGameState] = useState<GameState>('idle')
   const [score, setScore] = useState(0)
   const [highScore, setHighScore] = useState(0)
-  const [snakeLength, setSnakeLength] = useState(3)
   const [collectedWords, setCollectedWords] = useState<string[]>([])
   const [poem, setPoem] = useState<string>('')
   const [isGeneratingPoem, setIsGeneratingPoem] = useState(false)
@@ -573,7 +578,6 @@ export default function Home() {
     scoreRef.current = 0
     speedRef.current = INITIAL_SPEED
     setScore(0)
-    setSnakeLength(3)
     spawnFood([])
   }, [spawnFood])
 
@@ -648,7 +652,6 @@ export default function Home() {
       const eatenWord = foodWordRef.current
       scoreRef.current += 10
       setScore(scoreRef.current)
-      setSnakeLength(newSnake.length)
       speedRef.current = Math.max(MIN_SPEED, speedRef.current - SPEED_INCREMENT)
 
       // Add word to collection
@@ -676,7 +679,7 @@ export default function Home() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    renderGame(
+    foodAnimationRef.current = renderGame(
       ctx,
       snakeRef.current,
       foodRef.current,
