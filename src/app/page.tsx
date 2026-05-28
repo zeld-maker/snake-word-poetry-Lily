@@ -9,26 +9,31 @@ import { Badge } from '@/components/ui/badge'
 const GRID_SIZE = 16
 const CELL_SIZE = 30
 const CANVAS_SIZE = GRID_SIZE * CELL_SIZE
-const INITIAL_SPEED = 120
-const SPEED_INCREMENT = 2
-const MIN_SPEED = 50
+const INITIAL_SPEED = 156
+const SPEED_INCREMENT = 3
+const MIN_SPEED = 65
 const WORDS_TO_POEM = 8
 
 type Position = { x: number; y: number }
 type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'
 type GameState = 'idle' | 'playing' | 'paused' | 'gameover'
 type PoemLanguage = 'mixed' | 'zh' | 'en'
-type PoemForm = 'auto' | 'classical' | 'modern' | 'sonnet' | 'haiku'
+type PoemForm = 'auto' | 'fivechar' | 'sevenchar' | 'changgu' | 'modern' | 'sonnet' | 'haiku' | 'ballad' | 'limerick' | 'villanelle'
 type WordLanguage = 'all' | 'zh' | 'en'
 type WordTheme = 'nature' | 'season' | 'mood' | 'cosmos' | 'journey' | 'myth' | 'time' | 'teawine' | 'deepsea' | 'music' | 'city' | 'wuxia' | 'film'
 
 // ─── Poem Form Options ────────────────────────────────────────────
 const POEM_FORMS: Record<PoemForm, { label: string; icon: string; desc: string }> = {
   auto: { label: '自动', icon: '✨', desc: '由 AI 选择最合适的体裁' },
-  classical: { label: '古体诗', icon: '📜', desc: '五言/七言绝句、律诗' },
-  modern: { label: '现代诗', icon: '🖋️', desc: '自由体诗歌' },
-  sonnet: { label: 'Sonnet', icon: '🎭', desc: '莎士比亚十四行诗' },
-  haiku: { label: 'Haiku', icon: '🎋', desc: '俳句 5-7-5 音节' },
+  fivechar: { label: '五言诗', icon: '📜', desc: '五言绝句(4句20字) / 五言律诗(8句40字)' },
+  sevenchar: { label: '七言诗', icon: '📜', desc: '七言绝句(4句28字) / 七言律诗(8句56字)' },
+  changgu: { label: '长古诗', icon: '🏔️', desc: '歌行体/古风，篇幅自由，叙事抒情' },
+  modern: { label: '现代诗', icon: '🖋️', desc: '自由体诗歌，不受格律束缚' },
+  sonnet: { label: '十四行诗（Sonnet）', icon: '🎭', desc: '莎士比亚体 ABAB CDCD EFEF GG' },
+  haiku: { label: '俳句（Haiku）', icon: '🎋', desc: '5-7-5 音节，捕捉瞬间' },
+  ballad: { label: '民谣体（Ballad）', icon: '🎵', desc: '4行一节，ABAB/ABCB 押韵' },
+  limerick: { label: '打油诗（Limerick）', icon: '😄', desc: '5行 AABBA 押韵，幽默轻快' },
+  villanelle: { label: '维拉内拉（Villanelle）', icon: '🔄', desc: '19行，特定诗句回旋重复' },
 }
 
 // ─── Themed Word Pools ────────────────────────────────────────────
