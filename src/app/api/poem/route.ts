@@ -3,6 +3,67 @@ import ZAI from 'z-ai-web-dev-sdk'
 type PoemForm = 'auto' | 'fivechar' | 'sevenchar' | 'changgu' | 'modern' | 'sonnet' | 'haiku' | 'ballad' | 'limerick' | 'villanelle'
 type PoemLanguage = 'zh' | 'en' | 'mixed'
 
+// ─── LLM Provider: supports external OpenAI-compatible APIs ─────
+// Set LLM_API_KEY, LLM_BASE_URL, LLM_MODEL env vars to use an external API.
+// If not set, falls back to z-ai-web-dev-sdk (sandbox environment).
+
+const LLM_API_KEY = process.env.LLM_API_KEY || ''
+const LLM_BASE_URL = process.env.LLM_BASE_URL || ''
+const LLM_MODEL = process.env.LLM_MODEL || ''
+
+async function callLLM(systemPrompt: string, userPrompt: string): Promise<string> {
+  // If external API is configured, use it
+  if (LLM_API_KEY && LLM_BASE_URL) {
+    const baseUrl = LLM_BASE_URL.replace(/\/+$/, '')
+    const url = `${baseUrl}/chat/completions`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${LLM_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: LLM_MODEL || 'qwen-plus',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.85,
+        max_tokens: 2048,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`LLM API error (${response.status}):`, errorText)
+      throw new Error(`LLM API returned status ${response.status}`)
+    }
+
+    const data = await response.json()
+    const content = data.choices?.[0]?.message?.content
+    if (!content) {
+      throw new Error('LLM API returned empty content')
+    }
+    return content
+  }
+
+  // Fallback: use z-ai-web-dev-sdk (sandbox environment)
+  const zai = await ZAI.create()
+  const completion = await zai.chat.completions.create({
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    thinking: { type: 'disabled' },
+  })
+  const content = completion.choices[0]?.message?.content
+  if (!content) {
+    throw new Error('z-ai SDK returned empty content')
+  }
+  return content
+}
+
 // ─── Helper: detect if a word is Chinese ──────────────────────────
 function isChineseWord(word: string): boolean {
   return /[\u4e00-\u9fff]/.test(word)
@@ -584,8 +645,6 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Words array is required' }, { status: 400 })
     }
 
-    const zai = await ZAI.create()
-
     const poemForm = (form as PoemForm) || 'auto'
     const poemLanguage = (language as PoemLanguage) || 'mixed'
     const { zhWords, enWords } = classifyWords(words)
@@ -649,19 +708,7 @@ ${formInstruction || `中文部分：如写古体诗需严格押韵（偶数句�
 ${formInstruction ? '请严格按照指定体裁创作，遵守所有格式规则。' : ''}将所有关键词自然融入诗中，中英文自然交织，不要给关键词加任何标记符号。`
     }
 
-    const completion = await zai.chat.completions.create({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      thinking: { type: 'disabled' },
-    })
-
-    const poem = completion.choices[0]?.message?.content
-
-    if (!poem) {
-      return Response.json({ error: 'Failed to generate poem' }, { status: 500 })
-    }
+    const poem = await callLLM(systemPrompt, userPrompt)
 
     return Response.json({ poem })
   } catch (error) {
